@@ -5,6 +5,8 @@
 /.pnp
 .pnp.js
 
+virtuallab.iml
+
 # testing
 /coverage
 
