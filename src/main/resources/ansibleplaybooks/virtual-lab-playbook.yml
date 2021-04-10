@@ -1,0 +1,19 @@
+---
+- name: Pull the Faculty specified lab image in the institution server
+  hosts: Institution_Host
+  vars:
+    labName: "{{ labName }}"
+  tasks:
+    - name: Pulling the image
+      shell:
+        cmd: docker pull vinayak96/{{labName}}:latest
+    - name: Removing previous container.
+      shell:
+        cmd: docker rm {{labName}}
+      ignore_errors: yes
+    - name: Creating new Container using the pulled image
+      shell:
+        cmd: docker create -it --name {{labName}} vinayak96/{{labName}}:latest
+    - name: Remove unused and unncessary Images
+      shell:
+        cmd: docker image prune -f
