@@ -5,9 +5,12 @@
     labName: "{{ labName }}"
     studentName: "{{ studentName }}"
   tasks:
-    - name: Create user
+    - name: Start Container
       shell:
-        cmd: docker exec {{labName}} useradd -m {{studentName}}
-    - name: Set password
+          cmd: docker start {{labName}}
+    - name: Create user and set password
       shell:
-        cmd: docker exec {{labName}} passwd {{studentName}}
+        cmd: docker exec {{labName}} useradd -m -p $(openssl passwd -1 {{studentName}}) {{studentName}}
+    - name: Exit Container
+      shell:
+          cmd: docker stop {{labName}}

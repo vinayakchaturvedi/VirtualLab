@@ -23,9 +23,7 @@ public class StudentOperationServiceUtil {
         Lab lab = labOperationService.findById(labId).get();
 
         lab.getStudents().add(student);
-        student.getLabs().add(lab);
         labOperationService.save(lab);
-        studentOperationService.save(student);
         createUserInContainer(lab, student);
         return lab;
     }
