@@ -1,5 +1,6 @@
 package com.example.virtuallab.controller;
 
+import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.service.StudentOperationService;
@@ -65,7 +66,8 @@ public class StudentOperationController {
     }
 
     @PostMapping(value = "/execCommand", produces = {"application/json"})
-    public String execCommand(@RequestBody JsonNode jsonNode) {
-        return jsonNode.get("command").asText();
+    public ResponseEntity<Execution> execCommand(@RequestBody Execution execution) {
+        execution.setResult("Demo Result");
+        return new ResponseEntity<>(execution, HttpStatus.OK);
     }
 }

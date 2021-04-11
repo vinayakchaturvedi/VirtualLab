@@ -8,7 +8,7 @@ class StudentTerminal extends Component {
 
         this.state = {
             command: "",
-            result: "",
+            output: ""
         }
         this.execCommandOnServer = this.execCommandOnServer.bind(this)
     }
@@ -33,7 +33,9 @@ class StudentTerminal extends Component {
 
         this.setState({
             result: await response.json()
-        }, () => console.log(this.state.result))
+        }, () => this.setState({
+            output: this.state.result.result
+        }))
     }
 
     render() {
@@ -59,7 +61,7 @@ class StudentTerminal extends Component {
                                     command: `${args._[0]}`
                                 })
                                 this.execCommandOnServer()
-                                print(this.state.result);
+                                print(this.state.output)
                             },
                             // options: [
                             //     {
