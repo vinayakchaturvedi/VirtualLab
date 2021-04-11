@@ -40,6 +40,12 @@ public class StudentOperationController {
         return "Student with id: " + id + " removed successfully";
     }
 
+    /*
+    {
+        "studentId": 1,
+        "labId": 1
+    }
+     */
     @PostMapping("/labRegistration")
     public String labRegistration(@RequestBody JsonNode jsonNode) {
         studentOperationServiceUtil.labRegistration(jsonNode);
