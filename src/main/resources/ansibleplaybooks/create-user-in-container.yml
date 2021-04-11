@@ -1,0 +1,13 @@
+---
+- name: Create a student profile in the container
+  hosts: Institution_Host
+  vars:
+    labName: "{{ labName }}"
+    studentName: "{{ studentName }}"
+  tasks:
+    - name: Create user
+      shell:
+        cmd: docker exec {{labName}} useradd -m {{studentName}}
+    - name: Set password
+      shell:
+        cmd: docker exec {{labName}} passwd {{studentName}}

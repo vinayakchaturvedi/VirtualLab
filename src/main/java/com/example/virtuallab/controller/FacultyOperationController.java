@@ -4,7 +4,7 @@ import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.service.FacultyOperationService;
 import com.example.virtuallab.service.LabOperationService;
-import com.example.virtuallab.service.impl.FacultyOperationServiceUtil;
+import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

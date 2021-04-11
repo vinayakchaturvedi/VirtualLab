@@ -2,6 +2,8 @@ package com.example.virtuallab.controller;
 
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.service.StudentOperationService;
+import com.example.virtuallab.service.StudentOperationServiceUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +15,8 @@ public class StudentOperationController {
 
     @Autowired
     private StudentOperationService studentOperationService;
+    @Autowired
+    private StudentOperationServiceUtil studentOperationServiceUtil;
 
     @PostMapping("/addStudent")
     public String addStudent(@RequestBody Student student) {
@@ -34,5 +38,12 @@ public class StudentOperationController {
     public String deleteStudentId(@PathVariable int id) {
         studentOperationService.deleteById(id);
         return "Student with id: " + id + " removed successfully";
+    }
+
+    @PostMapping("/labRegistration")
+    public String labRegistration(@RequestBody JsonNode jsonNode) {
+        studentOperationServiceUtil.labRegistration(jsonNode);
+        return "Successfully registered the studentId" +
+                jsonNode.get("studentId") + " for the lab " + jsonNode.get("labName");
     }
 }
