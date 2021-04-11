@@ -32,9 +32,9 @@ class StudentTerminal extends Component {
         console.log(response);
 
         this.setState({
-            result: await response.json()
+            backendResponse: await response.json()
         }, () => this.setState({
-            output: this.state.result.result
+            output: this.state.backendResponse.result
         }))
     }
 
