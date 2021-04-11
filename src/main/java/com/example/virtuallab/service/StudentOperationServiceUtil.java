@@ -19,8 +19,10 @@ public class StudentOperationServiceUtil {
         int studentId = jsonNode.get("studentId").asInt();
         int labId = jsonNode.get("labId").asInt();
 
-        Student student = studentOperationService.findById(labId).get();
-        Lab lab = labOperationService.findById(labId).get();
+        Student student = studentOperationService.findById(labId).orElseGet(null);
+        Lab lab = labOperationService.findById(labId).orElseGet(null);
+
+        if (student == null || lab == null) return null;
 
         lab.getStudents().add(student);
         labOperationService.save(lab);
