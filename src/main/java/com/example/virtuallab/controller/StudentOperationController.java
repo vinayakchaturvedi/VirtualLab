@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class StudentOperationController {
 
@@ -61,5 +62,10 @@ public class StudentOperationController {
         message = "Successfully registered the studentId" +
                 jsonNode.get("studentId") + " for the lab " + jsonNode.get("labName");
         return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/execCommand", produces = {"application/json"})
+    public String execCommand(@RequestBody JsonNode jsonNode) {
+        return jsonNode.get("command").asText();
     }
 }
