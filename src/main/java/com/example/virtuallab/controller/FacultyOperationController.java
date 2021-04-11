@@ -50,7 +50,8 @@ public class FacultyOperationController {
     @PostMapping("/addLab")
     public ResponseEntity<Lab> addLab(@RequestBody JsonNode jsonNode) {
         Lab lab = util.saveLab(jsonNode);
-        return new ResponseEntity<>(labOperationService.save(lab), HttpStatus.OK);
+        if (lab == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(lab, HttpStatus.OK);
     }
 
     @GetMapping("/findAllLabs")
