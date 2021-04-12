@@ -3,10 +3,12 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.service.FacultyOperationService;
+import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.example.virtuallab.service.LabOperationService;
-import com.example.virtuallab.service.impl.FacultyOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,46 +25,50 @@ public class FacultyOperationController {
     private FacultyOperationServiceUtil util;
 
     @PostMapping("/addFaculty")
-    public String addFaculty(@RequestBody Faculty faculty) {
-        facultyOperationService.save(faculty);
-        return "Faculty with id: " + faculty.getId() + " added successfully";
+    public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
+        return new ResponseEntity<>(facultyOperationService.save(faculty), HttpStatus.OK);
     }
 
     @GetMapping("/findAllFaculties")
-    public List<Faculty> getAllFaculty() {
-        return facultyOperationService.findAll();
+    public ResponseEntity<List<Faculty>> getAllFaculty() {
+        return new ResponseEntity<>(facultyOperationService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/getFaculty/{id}")
-    public Optional<Faculty> getFacultyById(@PathVariable int id) {
-        return facultyOperationService.findById(id);
+    public ResponseEntity<Faculty> getFacultyById(@PathVariable int id) {
+        Optional<Faculty> faculty = facultyOperationService.findById(id);
+        return faculty.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteFaculty/{id}")
-    public String deleteFacultyId(@PathVariable int id) {
+    public ResponseEntity<String> deleteFacultyId(@PathVariable int id) {
         facultyOperationService.deleteById(id);
-        return "Faculty with id: " + id + " removed successfully";
+        String message = "Faculty with id: " + id + " removed successfully";
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @PostMapping("/addLab")
-    public String addLab(@RequestBody JsonNode jsonNode) {
-        util.saveLab(jsonNode);
-        return "Lab with id: " + jsonNode.get("id").asText() + " added successfully";
+    public ResponseEntity<Lab> addLab(@RequestBody JsonNode jsonNode) {
+        Lab lab = util.saveLab(jsonNode);
+        if (lab == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(lab, HttpStatus.OK);
     }
 
     @GetMapping("/findAllLabs")
-    public List<Lab> getAllLabs() {
-        return labOperationService.findAll();
+    public ResponseEntity<List<Lab>> getAllLabs() {
+        return new ResponseEntity<>(labOperationService.findAll(), HttpStatus.OK);
     }
 
     @GetMapping("/getLab/{id}")
-    public Optional<Lab> getLabById(@PathVariable int id) {
-        return labOperationService.findById(id);
+    public ResponseEntity<Lab> getLabById(@PathVariable int id) {
+        Optional<Lab> lab = labOperationService.findById(id);
+        return lab.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteLab/{id}")
-    public String deleteLabId(@PathVariable int id) {
+    public ResponseEntity<String> deleteLabId(@PathVariable int id) {
         labOperationService.deleteById(id);
-        return "Lab with id: " + id + " removed successfully";
+        String message = "Lab with id: " + id + " removed successfully";
+        return new ResponseEntity<>(message, HttpStatus.OK);
     }
 }
