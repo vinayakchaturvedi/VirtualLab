@@ -41,4 +41,11 @@ public class StudentOperationServiceUtil {
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " studentName=" + studentName, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
+
+    public String executeCommand(String labName,String studentName, String command){
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        processBuilder.command("bash", "-c", command);
+        String response =new ExecuteLinuxProcess().executeProcess(processBuilder);
+        return  response;
+    }
 }
