@@ -15,7 +15,7 @@ public class ExecuteLinuxProcess {
             String line;
             while ((line = bufferedReader.readLine()) != null) {
                 System.out.println(line);
-
+                result.append(line+"\n");
             }
             while ((line = reader.readLine()) != null) {
                 result.append(line+"\n");

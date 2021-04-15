@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
+
 @Component
 public class StudentOperationServiceUtil {
 
@@ -43,9 +45,27 @@ public class StudentOperationServiceUtil {
     }
 
     public String executeCommand(String labName,String studentName, String command){
+        if(!isValid(command)){
+            return "Invalid Permission or Commanad";
+        }
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", command);
         String response =new ExecuteLinuxProcess().executeProcess(processBuilder);
         return  response;
+    }
+
+    private boolean isValid(String command){
+        HashSet<String> listOfValidCommands = new HashSet<>();
+        for(ListOfValidCommands validcmd:ListOfValidCommands.values()){
+            listOfValidCommands.add(validcmd.name());
+        }
+        String[] commands = command.split(";");
+        for(String cmd:commands){
+            String exec = cmd.split(" ")[0];
+            if(!listOfValidCommands.contains(exec))
+                return false;
+        }
+
+        return true;
     }
 }
