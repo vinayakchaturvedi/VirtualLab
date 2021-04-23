@@ -29,16 +29,20 @@ export class Register extends React.Component {
     }
     render() {
         return ( <div>
+            <div className="base-container" ref={this.props.containerRef}>
                 <div className="navbar-content">
                     <h1>Virtual Lab</h1>
                 </div>
-            <div className="base-container" ref={this.props.containerRef}>
-                <div className="header">Register</div>
                 <div className="content">
                     <div className="image">
                         <img src={imglog} alt="Virtal Labs" />
                     </div>
                     <div className="form">
+                        <div className="form-radio">
+                            {/*<label htmlFor="selectType">Select Type</label>*/}
+                            <input type="radio" value="Faculty" name="loginType"/> Faculty
+                            <input type="radio" value="Student" name="loginType"/> Student
+                        </div>
                         <div className="form-group">
                             <label htmlFor="username">Username</label>
                             <input value={this.state.username}
@@ -49,13 +53,13 @@ export class Register extends React.Component {
                             <label htmlFor="email">Email</label>
                             <input value={this.state.email}
                                    onChange={this.handleChange}
-                                   type="text" name="email" placeholder="Email" />
+                                   type="email" name="email" placeholder="Email" />
                         </div>
                         <div className="form-group">
                             <label htmlFor="password">Password</label>
                             <input value={this.state.password}
                                    onChange={this.handleChange}
-                                   type="text" name="password" placeholder="Password" />
+                                   type="password" name="password" placeholder="Password" />
                         </div>
                     </div>
                 </div>
