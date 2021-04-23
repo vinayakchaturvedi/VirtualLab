@@ -16,14 +16,7 @@ class FacultyHome extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            faculty: {
-                facultyId: 1,
-                userName: "T01",
-                facultyName: "R Thangaraju",
-                emailId: "Thangaraju@gmail.com",
-                password: "root",
-                labs: []
-            },
+            faculty: this.props.location.faculty,
             selectedLabForCreation: "",
             availableLabsForCreation: [],
             createLabMessage: "",
