@@ -3,6 +3,7 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.service.LabOperationService;
 import com.example.virtuallab.service.StudentOperationService;
 import com.example.virtuallab.service.StudentOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -11,9 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -23,6 +22,8 @@ public class StudentOperationController {
     private StudentOperationService studentOperationService;
     @Autowired
     private StudentOperationServiceUtil studentOperationServiceUtil;
+    @Autowired
+    private LabOperationService labOperationService;
 
     /*
     {
@@ -94,6 +95,22 @@ public class StudentOperationController {
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
+    @GetMapping("/getNotRegisteredLabs/{id}")
+    public ResponseEntity<List<Lab>> getNotRegisteredLabs(@PathVariable int id) {
+        Optional<Student> student = studentOperationService.findById(id);
+        Set<String> alreadyRegisteredLabs = new HashSet<>();
+        student.get().getLabs().forEach(lab -> alreadyRegisteredLabs.add(lab.getLabName()));
+        Iterable<Lab> allLabs = labOperationService.findAll();
+        List<Lab> notRegisteredLabs = new ArrayList<>();
+        allLabs.forEach(lab -> {
+            if (!alreadyRegisteredLabs.contains(lab.getLabName())) {
+                notRegisteredLabs.add(lab.shallowCopy(false));
+            }
+        });
+
+        return new ResponseEntity<>(notRegisteredLabs, HttpStatus.OK);
+    }
+
     /*
     {
         "studentId": 1,
@@ -108,7 +125,7 @@ public class StudentOperationController {
             message = "Error Lab/Student does not exist";
             return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
         }
-        message = "Successfully registered the studentId " +
+        message = "Successfully registered the StudentId " +
                 jsonNode.get("studentId") + " for the lab " + response.getLabName();
         return new ResponseEntity<>(message, HttpStatus.OK);
     }

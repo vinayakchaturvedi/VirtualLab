@@ -80,7 +80,7 @@ class FacultyHome extends Component {
             },
         });
 
-        let status2 = response.status;
+        let status2 = response2.status;
         if (status2 === 200) {
             let availableLabsDetailsForAnalysisTemp = {};
             let availableLabsForAnalysisTemp = []
@@ -116,7 +116,7 @@ class FacultyHome extends Component {
         }
 
         this.setState({
-            createLabMessage: "Please wait! while we are creating your lab"
+            createLabMessage: "Please wait! while we are creating your lab..."
         })
 
         let response = await fetch('http://localhost:8700/addLab/', {
@@ -208,7 +208,7 @@ class FacultyHome extends Component {
         )
 
         return (
-            <div>
+            <div className="Home">
                 <div className="NAV">
                     <nav>
                         <input type="checkbox" id="check"/>

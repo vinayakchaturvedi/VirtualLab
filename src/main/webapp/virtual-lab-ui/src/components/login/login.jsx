@@ -37,8 +37,14 @@ class Login extends React.Component {
                 })
             });
 
-            let result = await response.json();
-            console.log(result);
+            if (response.status === 200) {
+                let result = await response.json();
+                console.log(result);
+                this.props.history.push({
+                    pathname: '/StudentHome',
+                    student: result
+                })
+            }
         } else if (document.getElementById("facultyLogin").checked === true) {
             console.log("Verifying faculty");
             //API Call to get faculty ID for login verification

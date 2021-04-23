@@ -154,12 +154,28 @@ body {
   text-align: center;
 }
 
-.FacultyHome h4 {
+.StudentHome .container {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 65%;
+}
+
+.StudentHome .item {
+  border: 2px solid rgb(98, 78, 78);
+  background: rgba(36, 40, 46, 0.55);
+  margin: 3px;
+  padding: 24px;
+  height: 500%;
+  text-align: center;
+}
+
+.Home h4 {
   font-size: 2vw;
   color: #0079e3;
 }
 
-.FacultyHome .item .labList select {
+.Home .item .labList select {
   background-color: #0563af;
   color: white;
   padding: 12px;
@@ -171,12 +187,12 @@ body {
   outline: none;
 }
 
-.FacultyHome .item .labList:hover::before {
+.Home .item .labList:hover::before {
   color: rgba(255, 255, 255, 0.6);
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-.FacultyHome .item .labList select option {
+.Home .item .labList select option {
   padding: 30px;
 }
 
@@ -192,28 +208,28 @@ body {
   border-radius: 25px;
 }
 
-.FacultyHome .createLabMessage {
+.Home .createLabMessage {
   font-size: 1.5vw;
   color: #dbdee1;
 }
 
-.FacultyHome .printDetailsDiv {
+.Home .printDetailsDiv {
   margin: 50px;
   text-align: left;
 }
 
-.FacultyHome .printDetails {
+.Home .printDetails {
   display: inline-block;
   font-size: 25px;
   padding: 1px;
   margin: 5px;
 }
 
-.FacultyHome h5 {
+.Home h5 {
   color: #a38282;
 }
 
-.FacultyHome p {
+.Home p {
   color: white;
 }
 
