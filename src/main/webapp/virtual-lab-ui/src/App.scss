@@ -122,3 +122,231 @@
     outline: none;
   }
 }
+
+body {
+  /*background: url("background1.png") no-repeat fixed;*/
+  background-size: cover;
+  height: calc(100vh - 80px);
+  background-color: rgb(10, 38, 59);
+}
+
+* {
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  list-style: none;
+  box-sizing: border-box;
+}
+
+.FacultyHome .container {
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 65%;
+}
+
+.FacultyHome .item {
+  border: 2px solid rgb(98, 78, 78);
+  background: rgba(36, 40, 46, 0.55);
+  margin: 3px;
+  padding: 24px;
+  height: 500%;
+  text-align: center;
+}
+
+.FacultyHome h4 {
+  font-size: 2vw;
+  color: #0079e3;
+}
+
+.FacultyHome .item .labList select {
+  background-color: #0563af;
+  color: white;
+  padding: 12px;
+  width: 250px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  outline: none;
+}
+
+.FacultyHome .item .labList:hover::before {
+  color: rgba(255, 255, 255, 0.6);
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.FacultyHome .item .labList select option {
+  padding: 30px;
+}
+
+.CreateLab {
+  margin-top: 4%;
+  margin-left: 2%;
+  text-align: center;
+  color: #ffffff;
+  background-color: #6f6e6e;
+  font-size: 18px;
+  width: 150px;
+  padding: 6px 22px;
+  border-radius: 25px;
+}
+
+.FacultyHome .createLabMessage {
+  font-size: 1.5vw;
+  color: #dbdee1;
+}
+
+.FacultyHome .printDetailsDiv {
+  margin: 50px;
+  text-align: left;
+}
+
+.FacultyHome .printDetails {
+  display: inline-block;
+  font-size: 25px;
+  padding: 1px;
+  margin: 5px;
+}
+
+.FacultyHome h5 {
+  color: #a38282;
+}
+
+.FacultyHome p {
+  color: white;
+}
+
+.FacultyHome .StudentDetails label{
+  text-align: left;
+  font-size: 1.5vw;
+  color: antiquewhite;
+}
+
+.FacultyHome .StudentDetails input{
+  background-color: #394d60;
+  color: white;
+  padding: 12px;
+  width: 250px;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  outline: none;
+}
+
+nav {
+  height: 80px;
+  width: 100%;
+}
+
+label.logo {
+  color: #062238;
+  font-size: 40px;
+  line-height: 80px;
+  padding: 0 100px;
+  font-weight: bold;
+}
+
+nav ul {
+  float: right;
+  margin-right: 20px;
+}
+
+nav ul li {
+  display: inline-block;
+  line-height: 80px;
+  margin: 0 5px;
+}
+
+nav ul li a {
+  color: #062238;
+  font-size: 26px;
+  padding: 7px 14px;
+  border-radius: 3px;
+}
+
+.NAV nav ul li a {
+  color: #ffffff;
+}
+
+.NAV nav label {
+  color: #ffffff;
+}
+
+.NAV nav {
+  border-bottom: 3px solid #ffffff;
+}
+
+.NAV a:hover {
+  color: #ee2b2b;
+}
+
+
+a:hover {
+  background: none;
+  color: white;
+  transition: .5s;
+}
+
+.checkBtn {
+  font-size: 30px;
+  color: white;
+  float: right;
+  line-height: 80px;
+  margin-right: 40px;
+  cursor: pointer;
+  display: none;
+}
+
+#check {
+  display: none;
+}
+
+@media (max-width: 858px) {
+  .checkBtn {
+    display: block;
+  }
+
+  nav {
+    background: rgba(133, 134, 138, 0.85);
+  }
+
+  ul {
+    position: fixed;
+    width: 100%;
+    height: 100vh;
+    background: rgba(137, 138, 140, 0.55);
+    top: 80px;
+    left: -100%;
+    text-align: center;
+    transition: all .5s;
+  }
+
+  nav ul li {
+    display: block;
+    line-height: 60px;
+  }
+
+  nav ul li a {
+    font-size: 24px;
+  }
+
+  a:hover {
+    background: none;
+    color: #0082e6;
+  }
+
+  #check:checked ~ ul {
+    left: 0;
+  }
+
+  .content {
+    display: none;
+  }
+
+  .createAccountShort {
+    display: block;
+  }
+
+}

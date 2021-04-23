@@ -1,57 +1,60 @@
 package com.example.virtuallab.bean;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document
+@Entity
 public class Student implements Cloneable {
 
     @Id
-    private int id;
-    private String firstName;
-    private String lastName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int studentId;
+    private String userName;
+    private String studentName;
     private String emailId;
-    private long contactNumber;
+    private String password;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "students_Labs", joinColumns = {@JoinColumn(name = "studentId")},
+            inverseJoinColumns = {@JoinColumn(name = "labId")})
     private List<Lab> labs;
 
     public Student() {
         labs = new ArrayList<>();
     }
 
-    public Student(int id, String firstName, String lastName, String emailId, long contactNumber, List<Lab> labs) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Student(int studentId, String userName, String studentName, String emailId, String password, List<Lab> labs) {
+        this.studentId = studentId;
+        this.userName = userName;
+        this.studentName = studentName;
         this.emailId = emailId;
-        this.contactNumber = contactNumber;
+        this.password = password;
         this.labs = labs;
     }
 
-    public int getId() {
-        return id;
+    public int getStudentId() {
+        return studentId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStudentId(int studentId) {
+        this.studentId = studentId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getStudentName() {
+        return studentName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setStudentName(String studentName) {
+        this.studentName = studentName;
     }
 
     public String getEmailId() {
@@ -62,12 +65,12 @@ public class Student implements Cloneable {
         this.emailId = emailId;
     }
 
-    public long getContactNumber() {
-        return contactNumber;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContactNumber(long contactNumber) {
-        this.contactNumber = contactNumber;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Lab> getLabs() {
@@ -81,11 +84,11 @@ public class Student implements Cloneable {
     @Override
     public String toString() {
         return "Student{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                "studentId=" + studentId +
+                ", userName='" + userName + '\'' +
+                ", studentName='" + studentName + '\'' +
                 ", emailId='" + emailId + '\'' +
-                ", contactNumber=" + contactNumber +
+                ", password='" + password + '\'' +
                 ", labs=" + labs +
                 '}';
     }
@@ -95,13 +98,14 @@ public class Student implements Cloneable {
         return super.clone();
     }
 
-    public Student shallowCopy() {
+    public Student shallowCopy(boolean isNestingRequired) {
         try {
             Student clonedStudent = (Student) this.clone();
             clonedStudent.labs = new ArrayList<>();
-
-            for (Lab lab : labs) {
-                clonedStudent.labs.add(lab.shallowCopy());
+            if (isNestingRequired) {
+                for (Lab lab : labs) {
+                    clonedStudent.labs.add(lab.shallowCopy(false));
+                }
             }
             return clonedStudent;
         } catch (CloneNotSupportedException e) {

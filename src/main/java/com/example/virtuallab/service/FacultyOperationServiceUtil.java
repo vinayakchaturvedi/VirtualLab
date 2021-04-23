@@ -2,6 +2,7 @@ package com.example.virtuallab.service;
 
 import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
+import com.example.virtuallab.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,8 +22,9 @@ public class FacultyOperationServiceUtil {
         Faculty faculty = facultyOperationService.findById(jsonNode.get("facultyId").asInt()).orElseGet(null);
         if (faculty == null) return null;
         String labName = jsonNode.get("labName").asText();
-        Lab lab = new Lab(jsonNode.get("id").asInt(),
-                jsonNode.get("labName").asText(),
+        if (!Constants.VALID_LABS.contains(labName)) return null;
+
+        Lab lab = new Lab(jsonNode.get("labName").asText(),
                 jsonNode.get("studentsRegistered").asInt(),
                 faculty, new ArrayList<>());
         labOperationService.save(lab);

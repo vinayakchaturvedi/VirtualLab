@@ -1,39 +1,44 @@
 package com.example.virtuallab.bean;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document
+@Entity
 public class Lab implements Cloneable {
 
     @Id
-    public int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    public int labId;
     private String labName;
     private int studentsRegistered;
+    private LocalDate creationDate;
+    @ManyToOne
+    @JoinColumn(name = "facultyId", nullable = false)
     private Faculty faculty;
+
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "labs")
     private List<Student> students;
 
     public Lab() {
         students = new ArrayList<>();
     }
 
-    public Lab(int id, String labName, int studentsRegistered, Faculty faculty, List<Student> students) {
-        this.id = id;
+    public Lab(String labName, int studentsRegistered, Faculty faculty, List<Student> students) {
         this.labName = labName;
         this.studentsRegistered = studentsRegistered;
         this.faculty = faculty;
         this.students = students;
+        this.creationDate = LocalDate.now();
     }
 
-    public int getId() {
-        return id;
+    public int getLabId() {
+        return labId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setLabId(int labId) {
+        this.labId = labId;
     }
 
     public String getLabName() {
@@ -68,26 +73,38 @@ public class Lab implements Cloneable {
         this.students = students;
     }
 
+    public LocalDate getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(LocalDate creationDate) {
+        this.creationDate = creationDate;
+    }
+
     @Override
     public String toString() {
         return "Lab{" +
-                "id=" + id +
+                "labId=" + labId +
                 ", labName='" + labName + '\'' +
                 ", studentsRegistered=" + studentsRegistered +
+                ", creationDate=" + creationDate +
+                ", faculty=" + faculty.getFacultyName() +
                 '}';
     }
-
 
     @Override
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 
-    public Lab shallowCopy() {
+    public Lab shallowCopy(boolean isNestingRequired) {
         try {
             Lab clonedLab = (Lab) this.clone();
             clonedLab.students = null;
-            clonedLab.faculty = null;
+            if (isNestingRequired)
+                clonedLab.faculty = faculty.shallowCopy(false);
+            else
+                clonedLab.faculty = null;
             return clonedLab;
         } catch (CloneNotSupportedException e) {
             e.printStackTrace();

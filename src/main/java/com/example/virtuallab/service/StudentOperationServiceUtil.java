@@ -2,6 +2,7 @@ package com.example.virtuallab.service;
 
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.utils.ListOfValidCommands;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,19 +22,21 @@ public class StudentOperationServiceUtil {
         int studentId = jsonNode.get("studentId").asInt();
         int labId = jsonNode.get("labId").asInt();
 
-        Student student = studentOperationService.findById(labId).orElseGet(null);
+        Student student = studentOperationService.findById(studentId).orElseGet(null);
         Lab lab = labOperationService.findById(labId).orElseGet(null);
 
         if (student == null || lab == null) return null;
 
-        lab.getStudents().add(student);
+        student.getLabs().add(lab);
+        lab.setStudentsRegistered(lab.getStudentsRegistered() + 1);
+        studentOperationService.save(student);
         labOperationService.save(lab);
         createUserInContainer(lab, student);
         return lab;
     }
 
     private void createUserInContainer(Lab lab, Student student) {
-        executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(lab.getLabName(), student.getFirstName());
+        executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(lab.getLabName(), student.getStudentName());
     }
 
     private void executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(String labName, String studentName) {
@@ -44,25 +47,25 @@ public class StudentOperationServiceUtil {
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
-    public String executeCommand(String labName,String studentName, String command){
-        if(!isValid(command)){
+    public String executeCommand(String labName, String studentName, String command) {
+        if (!isValid(command)) {
             return "Invalid Permission or Commanad";
         }
         ProcessBuilder processBuilder = new ProcessBuilder();
         processBuilder.command("bash", "-c", command);
-        String response =new ExecuteLinuxProcess().executeProcess(processBuilder);
-        return  response;
+        String response = new ExecuteLinuxProcess().executeProcess(processBuilder);
+        return response;
     }
 
-    private boolean isValid(String command){
+    private boolean isValid(String command) {
         HashSet<String> listOfValidCommands = new HashSet<>();
-        for(ListOfValidCommands validcmd:ListOfValidCommands.values()){
+        for (ListOfValidCommands validcmd : ListOfValidCommands.values()) {
             listOfValidCommands.add(validcmd.name());
         }
         String[] commands = command.split(";");
-        for(String cmd:commands){
+        for (String cmd : commands) {
             String exec = cmd.split(" ")[0];
-            if(!listOfValidCommands.contains(exec))
+            if (!listOfValidCommands.contains(exec))
                 return false;
         }
 

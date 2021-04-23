@@ -1,57 +1,57 @@
 package com.example.virtuallab.bean;
 
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Document
-public class Faculty {
+@Entity
+public class Faculty implements Cloneable {
 
     @Id
-    private int id;
-    private String firstName;
-    private String lastName;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int facultyId;
+    private String userName;
+    private String facultyName;
     private String emailId;
-    private long contactNumber;
+    private String password;
+    @OneToMany(mappedBy = "faculty", cascade = CascadeType.ALL)
     private List<Lab> labs = new ArrayList<>();
 
     public Faculty() {
         labs = new ArrayList<>();
     }
 
-    public Faculty(int id, String firstName, String lastName, String emailId, long contactNumber, List<Lab> labs) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
+    public Faculty(int facultyId, String userName, String facultyName, String emailId, String password, List<Lab> labs) {
+        this.facultyId = facultyId;
+        this.userName = userName;
+        this.facultyName = facultyName;
         this.emailId = emailId;
-        this.contactNumber = contactNumber;
+        this.password = password;
         this.labs = labs;
     }
 
-    public int getId() {
-        return id;
+    public int getFacultyId() {
+        return facultyId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setFacultyId(int facultyId) {
+        this.facultyId = facultyId;
     }
 
-    public String getFirstName() {
-        return firstName;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
-    public String getLastName() {
-        return lastName;
+    public String getFacultyName() {
+        return facultyName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setFacultyName(String facultyName) {
+        this.facultyName = facultyName;
     }
 
     public String getEmailId() {
@@ -62,12 +62,12 @@ public class Faculty {
         this.emailId = emailId;
     }
 
-    public long getContactNumber() {
-        return contactNumber;
+    public String getPassword() {
+        return password;
     }
 
-    public void setContactNumber(long contactNumber) {
-        this.contactNumber = contactNumber;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public List<Lab> getLabs() {
@@ -81,11 +81,11 @@ public class Faculty {
     @Override
     public String toString() {
         return "Faculty{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
+                "facultyId=" + facultyId +
+                ", userName='" + userName + '\'' +
+                ", facultyName='" + facultyName + '\'' +
                 ", emailId='" + emailId + '\'' +
-                ", contactNumber=" + contactNumber +
+                ", password='" + password + '\'' +
                 ", labs=" + labs +
                 '}';
     }
@@ -95,13 +95,14 @@ public class Faculty {
         return super.clone();
     }
 
-    public Faculty shallowCopy() {
+    public Faculty shallowCopy(boolean isNestingRequired) {
         try {
             Faculty clonedFaculty = (Faculty) this.clone();
             clonedFaculty.labs = new ArrayList<>();
-
-            for (Lab lab : labs) {
-                clonedFaculty.labs.add(lab.shallowCopy());
+            if (isNestingRequired) {
+                for (Lab lab : labs) {
+                    clonedFaculty.labs.add(lab.shallowCopy(false));
+                }
             }
             return clonedFaculty;
         } catch (CloneNotSupportedException e) {
