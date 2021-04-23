@@ -5,15 +5,16 @@ import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.service.FacultyOperationService;
 import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.example.virtuallab.service.LabOperationService;
+import com.example.virtuallab.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
+@CrossOrigin(origins = "*")
 @RestController
 public class FacultyOperationController {
 
@@ -24,20 +25,54 @@ public class FacultyOperationController {
     @Autowired
     private FacultyOperationServiceUtil util;
 
+    /*
+    {
+    "userName": "T01",
+    "facultyName": "R Thangaraju",
+    "emailId": "Thangaraju@gmail.com",
+    "password": "root"
+    }
+     */
     @PostMapping("/addFaculty")
     public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
-        return new ResponseEntity<>(facultyOperationService.save(faculty), HttpStatus.OK);
+        Faculty response = facultyOperationService.save(faculty);
+        return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
+    }
+
+    /*
+    {
+        "userName": "T01",
+        "password": "root"
+    }
+     */
+    @PostMapping("/verifyFacultyLogin")
+    public ResponseEntity<Faculty> verifyFacultyLogin(@RequestBody Faculty request) {
+        Iterable<Faculty> all = facultyOperationService.findAll();
+        final Faculty[] response = {null};
+        all.forEach(faculty -> {
+            if (faculty.getUserName().equals(request.getUserName()) &&
+                    faculty.getPassword().equals(request.getPassword()))
+                response[0] = faculty.shallowCopy(true);
+        });
+        if (response[0] == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response[0], HttpStatus.OK);
     }
 
     @GetMapping("/findAllFaculties")
     public ResponseEntity<List<Faculty>> getAllFaculty() {
-        return new ResponseEntity<>(facultyOperationService.findAll(), HttpStatus.OK);
+        Iterable<Faculty> all = facultyOperationService.findAll();
+        List<Faculty> facultyList = new ArrayList<>();
+        all.forEach(faculty -> {
+            facultyList.add(faculty.shallowCopy(true));
+        });
+        return new ResponseEntity<>(facultyList, HttpStatus.OK);
     }
 
     @GetMapping("/getFaculty/{id}")
     public ResponseEntity<Faculty> getFacultyById(@PathVariable int id) {
         Optional<Faculty> faculty = facultyOperationService.findById(id);
-        return faculty.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
+        return faculty.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteFaculty/{id}")
@@ -51,18 +86,40 @@ public class FacultyOperationController {
     public ResponseEntity<Lab> addLab(@RequestBody JsonNode jsonNode) {
         Lab lab = util.saveLab(jsonNode);
         if (lab == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        return new ResponseEntity<>(lab, HttpStatus.OK);
+        return new ResponseEntity<>(lab.shallowCopy(true), HttpStatus.OK);
     }
 
     @GetMapping("/findAllLabs")
     public ResponseEntity<List<Lab>> getAllLabs() {
-        return new ResponseEntity<>(labOperationService.findAll(), HttpStatus.OK);
+        Iterable<Lab> all = labOperationService.findAll();
+        List<Lab> labList = new ArrayList<>();
+        all.forEach(lab -> {
+            labList.add(lab.shallowCopy(true));
+        });
+        return new ResponseEntity<>(labList, HttpStatus.OK);
     }
+
+    @GetMapping("/findAllNonExistingLabs")
+    public ResponseEntity<List<String>> getAllNonExistingLabs() {
+        Iterable<Lab> all = labOperationService.findAll();
+        Set<String> labList = new HashSet<>();
+        all.forEach(lab -> {
+            labList.add(lab.getLabName());
+        });
+
+        List<String> response = new ArrayList<>();
+        for (String lab : Constants.VALID_LABS) {
+            if (!labList.contains(lab))
+                response.add(lab);
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 
     @GetMapping("/getLab/{id}")
     public ResponseEntity<Lab> getLabById(@PathVariable int id) {
         Optional<Lab> lab = labOperationService.findById(id);
-        return lab.map(value -> new ResponseEntity<>(value, HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
+        return lab.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteLab/{id}")
