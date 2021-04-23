@@ -9,8 +9,10 @@ class Register extends React.Component {
         super(props);
         this.state = {
             username: "",
+            name: "",
             email: "",
-            password: ""
+            password: "",
+            loginType: ""
         }
         this.handleChange = this.handleChange.bind(this);
         this.saveUser = this.saveUser.bind(this);
@@ -23,13 +25,57 @@ class Register extends React.Component {
         })
     }
 
-    saveUser = (e) => {
-        e.preventDefault();
-        let user = {username: this.state.username, email: this.state.email, password: this.state.password,}
-        console.log(user.username);
-        console.log(user.password);
-        console.log(user.email);
-        console.log('User =>' + JSON.stringify(user));
+    async saveUser() {
+        console.log(this.state.loginType)
+        if (this.state.loginType === "Student") {
+            let response = await fetch('http://localhost:8700/addStudent/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify({
+                    userName: this.state.username,
+                    studentName: this.state.name,
+                    password: this.state.password,
+                    emailId: this.state.email
+                })
+            });
+
+            if (response.status === 200) {
+                let student = await response.json();
+                console.log("Successfully registered the student: ", student);
+            } else {
+                console.log("Error while registering the student");
+            }
+        }
+
+        if (this.state.loginType === "Faculty") {
+            let response = await fetch('http://localhost:8700/addFaculty/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+                body: JSON.stringify({
+                    userName: this.state.username,
+                    facultyName: this.state.name,
+                    password: this.state.password,
+                    emailId: this.state.email
+                })
+            });
+
+            if (response.status === 200) {
+                let faculty = await response.json();
+                console.log("Successfully registered the faculty: ", faculty);
+                this.props.history.push({
+                    pathname: '/FacultyHome',
+                    faculty: faculty
+                })
+            } else {
+                console.log("Error while registering the faculty");
+            }
+        }
     }
 
     render() {
@@ -45,14 +91,28 @@ class Register extends React.Component {
                         <div className="form">
                             <div className="form-radio">
                                 {/*<label htmlFor="selectType">Select Type</label>*/}
-                                <input type="radio" value="Faculty" name="loginType"/> Faculty
-                                <input type="radio" value="Student" name="loginType"/> Student
+                                <input
+                                    type="radio" value="Faculty" name="loginType"
+                                    onChange={this.handleChange}
+                                    checked={this.state.loginType === "Faculty"}
+                                /> Faculty
+                                <input
+                                    type="radio" value="Student" name="loginType"
+                                    onChange={this.handleChange}
+                                    checked={this.state.loginType === "Student"}
+                                /> Student
                             </div>
                             <div className="form-group">
-                                <label htmlFor="username">Username</label>
+                                <label htmlFor="username">Enrollment Number</label>
                                 <input value={this.state.username}
                                        onChange={this.handleChange}
-                                       type="text" name="username" placeholder="Username"/>
+                                       type="text" name="username" placeholder="Enrollment Number"/>
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="username">Name</label>
+                                <input value={this.state.name}
+                                       onChange={this.handleChange}
+                                       type="text" name="name" placeholder="Name"/>
                             </div>
                             <div className="form-group">
                                 <label htmlFor="email">Email</label>
