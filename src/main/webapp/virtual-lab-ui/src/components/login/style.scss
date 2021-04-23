@@ -9,10 +9,6 @@
     font-family: "Open Sans", sans-serif;
   }
 .navbar-content{
-  background-color: #23d2f1;
-  margin: auto -16px;
-  padding: 16px 32px;
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
 }
 
   navbar-content h1 {
@@ -25,7 +21,8 @@
     flex-direction: column;
 
     .image {
-      width: 21em;
+      width: 20em;
+      align-content: center;
       img {
         width: 100%;
         height: 100%;
@@ -38,6 +35,13 @@
       flex-direction: column;
       align-items: center;
 
+      .form-radio{
+        padding-bottom: 10px;
+        width: 100%;
+        input{
+        margin-left: 30px;
+        }
+      }
       .form-group {
         display: flex;
         flex-direction: column;
@@ -50,13 +54,13 @@
           margin-top: 6px;
           min-width: 18em;
           height: 37px;
-          padding: 0px 10px;
+          padding: 0px 6px;
           font-size: 16px;
           font-family: "Open Sans", sans-serif;
           background-color: #f3f3f3;
           border: 0;
           border-radius: 4px;
-          margin-bottom: 31px;
+          margin-bottom: 20px;
           transition: all 250ms ease-in-out;
           &:hover {
             //background-color: #ffffff;
@@ -73,6 +77,6 @@
   }
 
   .footer {
-    margin-top: 2em;
+    margin-top: 1em;
   }
 }

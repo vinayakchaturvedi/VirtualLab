@@ -5,7 +5,6 @@ import Terminal from 'terminal-in-react';
 class StudentTerminal extends Component {
     constructor(props) {
         super();
-
         this.state = {
             command: "",
             output: ""
@@ -78,8 +77,6 @@ class StudentTerminal extends Component {
                     msg='You can write anything here. Example - Hello! My name is Foo and I like Bar.'
                 />
             </div>
-
-
         );
     }
 }
