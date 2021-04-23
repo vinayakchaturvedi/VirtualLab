@@ -25,12 +25,26 @@ public class FacultyOperationController {
     @Autowired
     private FacultyOperationServiceUtil util;
 
+    /*
+    {
+    "userName": "T01",
+    "facultyName": "R Thangaraju",
+    "emailId": "Thangaraju@gmail.com",
+    "password": "root"
+    }
+     */
     @PostMapping("/addFaculty")
     public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
         Faculty response = facultyOperationService.save(faculty);
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
+    /*
+    {
+        "userName": "T01",
+        "password": "root"
+    }
+     */
     @PostMapping("/verifyFacultyLogin")
     public ResponseEntity<Faculty> verifyFacultyLogin(@RequestBody Faculty request) {
         Iterable<Faculty> all = facultyOperationService.findAll();

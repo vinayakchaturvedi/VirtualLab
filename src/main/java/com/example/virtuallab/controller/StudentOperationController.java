@@ -24,12 +24,26 @@ public class StudentOperationController {
     @Autowired
     private StudentOperationServiceUtil studentOperationServiceUtil;
 
+    /*
+    {
+    "userName": "MT2020046",
+    "studentName": "Vinayak Chaturvedi",
+    "emailId": "vinayak.chaturvedi96@gmail.com",
+    "password": "root"
+    }
+     */
     @PostMapping("/addStudent")
     public ResponseEntity<Student> addStudent(@RequestBody Student student) {
         Student response = studentOperationService.save(student);
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
+    /*
+    {
+        "userName": "MT2020046",
+        "password": "root"
+     }
+     */
     @PostMapping("/verifyStudentLogin")
     public ResponseEntity<Student> verifyStudentLogin(@RequestBody Student request) {
         Iterable<Student> all = studentOperationService.findAll();
