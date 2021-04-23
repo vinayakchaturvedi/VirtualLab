@@ -4,8 +4,10 @@ import Terminal from 'terminal-in-react';
 // import 'terminal-in-react/lib/css/index.css';
 class StudentTerminal extends Component {
     constructor(props) {
-        super();
+        super(props);
         this.state = {
+            student: this.props.location.student,
+            lab: this.props.location.lab,
             command: "",
             output: ""
         }
@@ -28,7 +30,6 @@ class StudentTerminal extends Component {
                 command: this.state.command,
             })
         });
-        console.log(response);
 
         this.setState({
             backendResponse: await response.json()
@@ -38,6 +39,8 @@ class StudentTerminal extends Component {
     }
 
     render() {
+        console.log("Student: ", this.state.student)
+        console.log("Lab: ", this.state.lab)
         return (
             <div
                 style={{

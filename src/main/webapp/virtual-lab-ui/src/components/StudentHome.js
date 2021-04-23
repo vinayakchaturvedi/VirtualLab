@@ -105,7 +105,6 @@ class StudentHome extends Component {
 
         if (response.status === 200) {
             let result = await response.text()
-            console.log("Result: ", result)
             this.setState({
                 labRegistrationMessage: result
             }, () => this.updateStudent())
@@ -130,7 +129,11 @@ class StudentHome extends Component {
     }
 
     async useLab() {
-
+        this.props.history.push({
+            pathname: "/StudentTerminal",
+            student: this.state.student,
+            lab: this.state.alreadyRegisteredLabsDetails[this.state.selectLabForUse]
+        })
     }
 
     logout() {

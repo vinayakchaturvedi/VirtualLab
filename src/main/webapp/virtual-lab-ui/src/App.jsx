@@ -17,7 +17,7 @@ class App extends React.Component {
                     </div>
                     <Route exact path="/" component={IndexPanel}>
                     </Route>
-                    <Route exact path="/terminal" component={StudentTerminal}>
+                    <Route exact path="/StudentTerminal" component={StudentTerminal}>
                     </Route>
                     <Route exact path='/FacultyHome' component={FacultyHome}>
                     </Route>
