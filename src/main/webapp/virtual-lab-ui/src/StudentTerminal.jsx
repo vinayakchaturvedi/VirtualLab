@@ -5,9 +5,8 @@ import Terminal from 'terminal-in-react';
 class StudentTerminal extends Component {
     constructor(props) {
         super(props);
+
         this.state = {
-            student: this.props.location.student,
-            lab: this.props.location.lab,
             command: "",
             output: ""
         }
@@ -15,10 +14,10 @@ class StudentTerminal extends Component {
     }
 
 
-    async execCommandOnServer(event) {
-        //event.preventDefault();
-        //event.stopPropagation();
-
+    async execCommandOnServer() {
+        this.setState({
+            isLoading:true
+        })
         let response = await fetch('http://localhost:8700/execCommand', {
             method: 'POST',
             headers: {
@@ -29,18 +28,21 @@ class StudentTerminal extends Component {
             body: JSON.stringify({
                 command: this.state.command,
             })
-        });
+        }).then(this.setState({
+            isLoading:false
+        }));
 
+        while(this.state.isLoading){}
+        console.log(response);
         this.setState({
-            backendResponse: await response.json()
-        }, () => this.setState({
+            backendResponse: await response.json(),
+
+        },()=>this.setState({
             output: this.state.backendResponse.result
-        }))
+        },()=>console.log(this.state.output)))
     }
 
     render() {
-        console.log("Student: ", this.state.student)
-        console.log("Lab: ", this.state.lab)
         return (
             <div
                 style={{
@@ -55,23 +57,21 @@ class StudentTerminal extends Component {
                     backgroundColor='black'
                     barColor='black'
                     style={{fontWeight: "bold", fontSize: "1em"}}
+
                     commands={{
                         execCommand: {
                             method: (args, print, runCommand) => {
                                 //this.execCommandOnServer(${args._[0]})
+                                let cmd='';
+                                for (let index = 0; index < `${args._["length"]}`; index++) {
+                                    cmd = cmd+(`${args._[index]}`)+" ";
+                                }
                                 this.setState({
-                                    command: `${args._[0]}`
-                                })
-                                this.execCommandOnServer()
-                                print(this.state.output)
+                                    command: cmd,
+                                },()=>console.log(this.state.command))
+                                this.execCommandOnServer().then(r => print(this.state.output))
+
                             },
-                            // options: [
-                            //     {
-                            //         name: 'color',
-                            //         description: 'The color the output should be',
-                            //         defaultValue: 'white',
-                            //     },
-                            // ],
                         },
                     }}
                     descriptions={{
@@ -80,6 +80,8 @@ class StudentTerminal extends Component {
                     msg='You can write anything here. Example - Hello! My name is Foo and I like Bar.'
                 />
             </div>
+
+
         );
     }
 }
