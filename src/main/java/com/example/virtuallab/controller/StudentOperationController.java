@@ -30,6 +30,20 @@ public class StudentOperationController {
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
+    @PostMapping("/verifyStudentLogin")
+    public ResponseEntity<Student> verifyStudentLogin(@RequestBody Student request) {
+        Iterable<Student> all = studentOperationService.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(request.getUserName()) &&
+                    student.getPassword().equals(request.getPassword()))
+                response[0] = student.shallowCopy(true);
+        });
+        if (response[0] == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response[0], HttpStatus.OK);
+    }
+
     @GetMapping("/findAllStudents")
     public ResponseEntity<List<Student>> getAllStudents() {
         Iterable<Student> all = studentOperationService.findAll();

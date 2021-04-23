@@ -31,6 +31,20 @@ public class FacultyOperationController {
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
+    @PostMapping("/verifyFacultyLogin")
+    public ResponseEntity<Faculty> verifyFacultyLogin(@RequestBody Faculty request) {
+        Iterable<Faculty> all = facultyOperationService.findAll();
+        final Faculty[] response = {null};
+        all.forEach(faculty -> {
+            if (faculty.getUserName().equals(request.getUserName()) &&
+                    faculty.getPassword().equals(request.getPassword()))
+                response[0] = faculty.shallowCopy(true);
+        });
+        if (response[0] == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response[0], HttpStatus.OK);
+    }
+
     @GetMapping("/findAllFaculties")
     public ResponseEntity<List<Faculty>> getAllFaculty() {
         Iterable<Faculty> all = facultyOperationService.findAll();
