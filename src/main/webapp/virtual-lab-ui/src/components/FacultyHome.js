@@ -17,6 +17,7 @@ class FacultyHome extends Component {
         super(props);
         this.state = {
             faculty: this.props.location.faculty,
+            isLoading: true,
             selectedLabForCreation: "",
             availableLabsForCreation: [],
             createLabMessage: "",
@@ -36,9 +37,23 @@ class FacultyHome extends Component {
         this.createLab = this.createLab.bind(this)
         this.analyzeLab = this.analyzeLab.bind(this)
         this.searchStudent = this.searchStudent.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     async componentDidMount() {
+
+        if (this.state.faculty === undefined) {
+            this.setState({
+                faculty: JSON.parse(localStorage.getItem('faculty')),
+                isLoading: false
+            })
+        } else {
+            localStorage.setItem('faculty', JSON.stringify(this.state.faculty));
+            this.setState({
+                isLoading: false
+            })
+        }
+
         //call backend and get list of available labs
         let response = await fetch('http://localhost:8700/findAllNonExistingLabs/', {
             method: 'GET',
@@ -164,7 +179,17 @@ class FacultyHome extends Component {
         }
     }
 
+    logout() {
+        localStorage.removeItem('faculty');
+    }
+
     render() {
+
+        if (this.state.isLoading) {
+            return (
+                <div>Loading</div>
+            )
+        }
 
         const labListForCreation = this.state.availableLabsForCreation.map(item =>
             <option value={item}>
@@ -195,7 +220,7 @@ class FacultyHome extends Component {
                             <li><Link to="/">About</Link></li>
                             <li><Link to="/">Services</Link></li>
                             <li><Link to="/">Contact</Link></li>
-                            <li><Link to="/">Logout</Link></li>
+                            <li><Link to="/" onClick={this.logout}>Logout</Link></li>
                         </ul>
                     </nav>
                 </div>
