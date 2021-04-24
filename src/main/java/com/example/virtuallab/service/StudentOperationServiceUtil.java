@@ -73,8 +73,22 @@ public class StudentOperationServiceUtil {
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String command = "bash -c \\\"cd /home/" + userName + " && " + commandRequest + "\\\"";
         command = "'" + command + "'";
-        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
-        return new ExecuteLinuxProcess().executeProcess(processBuilder);
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
+        String response = new ExecuteLinuxProcess().executeProcess(processBuilder);
+        response = response.substring(response.indexOf("TASK [Execute specified command inside the container]"));
+        String output = "\"shell_result.stdout_lines\": [";
+        int indexStart = response.indexOf(output);
+        int indexEnd = response.indexOf("PLAY RECAP");
+        if (indexStart == -1) {
+            String error = "\"stderr\": \"Error: ";
+            indexStart = response.indexOf(error);
+            indexEnd = response.indexOf("\", \"stderr_lines\"");
+            if (indexStart == -1) return "";
+            return "Error: " + response.substring(indexStart + error.length(), indexEnd);
+        }
+        if (response.length() <= indexStart + output.length() + 10 || indexEnd - 11 <= indexStart + output.length() + 10)
+            return "";
+        return "Output: " + response.substring(indexStart + output.length() + 10, indexEnd - 11);
     }
 
     private boolean isValid(String command) {

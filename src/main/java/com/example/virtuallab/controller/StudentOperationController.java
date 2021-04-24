@@ -132,6 +132,7 @@ public class StudentOperationController {
 
     @PostMapping(value = "/execCommand", produces = {"application/json"})
     public ResponseEntity<Execution> execCommand(@RequestBody Execution execution) {
+        System.out.println("Command Execution request: " + execution);
         String result = studentOperationServiceUtil.executeCommand(execution.getLabName(), execution.getUserName(), execution.getCommand());
         execution.setResult(result);
         return new ResponseEntity<>(execution, HttpStatus.OK);
