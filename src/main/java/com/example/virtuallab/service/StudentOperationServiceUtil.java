@@ -36,14 +36,14 @@ public class StudentOperationServiceUtil {
     }
 
     private void createUserInContainer(Lab lab, Student student) {
-        executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(lab.getLabName(), student.getStudentName());
+        executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(lab.getLabName(), student.getUserName());
     }
 
-    private void executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(String labName, String studentName) {
+    private void executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(String labName, String userName) {
         ProcessBuilder processBuilder = new ProcessBuilder();
         String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/create-user-in-container.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
-        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " studentName=" + studentName, "-i", inventoryPath);
+        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " userName=" + userName, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 

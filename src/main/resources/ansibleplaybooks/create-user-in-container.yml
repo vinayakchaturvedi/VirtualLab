@@ -3,14 +3,14 @@
   hosts: Institution_Host
   vars:
     labName: "{{ labName }}"
-    studentName: "{{ studentName }}"
+    userName: "{{ userName }}"
   tasks:
     - name: Start Container
       shell:
           cmd: docker start {{labName}}
     - name: Create user and set password
       shell:
-        cmd: docker exec {{labName}} useradd -m -p $(openssl passwd -1 {{studentName}}) {{studentName}}
+        cmd: docker exec {{labName}} useradd -m -p $(openssl passwd -1 {{userName}}) {{userName}}
     - name: Exit Container
       shell:
           cmd: docker stop {{labName}}
