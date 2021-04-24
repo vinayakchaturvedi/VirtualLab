@@ -21,6 +21,7 @@ class StudentHome extends Component {
         this.handleChange = this.handleChange.bind(this);
         this.useLab = this.useLab.bind(this);
         this.updateStudent = this.updateStudent.bind(this);
+        this.loadData = this.loadData.bind(this);
     }
 
     async componentDidMount() {
@@ -28,18 +29,19 @@ class StudentHome extends Component {
             this.setState({
                 student: JSON.parse(localStorage.getItem('student')),
                 isLoading: false
-            })
+            }, () => this.loadData())
         } else {
             localStorage.setItem('student', JSON.stringify(this.state.student));
             this.setState({
                 isLoading: false
-            })
+            }, () => this.loadData())
         }
+    }
 
-        let studentTemp = JSON.parse(localStorage.getItem('student'));
+    async loadData() {
         let alreadyRegisteredLabsTemp = []
         let alreadyRegisteredLabsDetailsTemp = {}
-        studentTemp.labs.forEach(lab => {
+        this.state.student.labs.forEach(lab => {
             alreadyRegisteredLabsTemp.push(lab.labName)
             alreadyRegisteredLabsDetailsTemp[lab.labName] = lab
         })
@@ -50,7 +52,7 @@ class StudentHome extends Component {
         })
 
         let response2 = await fetch('http://localhost:8700/getNotRegisteredLabs/' +
-            JSON.parse(localStorage.getItem('student')).studentId, {
+            this.state.student.studentId, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -125,7 +127,7 @@ class StudentHome extends Component {
         localStorage.setItem('student', JSON.stringify(student));
         this.setState({
             student: student
-        })
+        }, () => this.loadData())
     }
 
     async useLab() {
