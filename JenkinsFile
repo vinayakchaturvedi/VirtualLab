@@ -45,7 +45,7 @@ pipeline {
           steps{
             script {
               dockerbackendImage = docker.build"$backendImage:${env.BUILD_NUMBER}"
-              dockerbackendImageLatest = docker.build "$backendImage:latest"
+              dockerbackendImageLatest = dockerbackendImage.tag("latest")
             }
           }
         }
@@ -54,7 +54,7 @@ pipeline {
           steps{
             script {
               dockerfrontendImage = docker.build ("$frontendImage:${env.BUILD_NUMBER}","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
-              dockerfrontendImageLatest = docker.build ("$frontendImage:latest","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
+              dockerfrontendImageLatest = dockerfrontendImage.tag("latest")
             }
           }
         }
@@ -63,7 +63,7 @@ pipeline {
           steps{
             script {
               dockerdbImage = docker.build ("$dbImage:${env.BUILD_NUMBER}","-f dbDocker/Dockerfile .")
-              dockerdbImageLatest = docker.build ("$dbImage:latest","-f dbDocker/Dockerfile .")
+              dockerdbImageLatest = dockerdbImage.tag("latest")
             }
           }
         }
