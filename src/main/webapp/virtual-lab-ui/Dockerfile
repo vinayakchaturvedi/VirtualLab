@@ -4,11 +4,11 @@ WORKDIR /frontend
 
 # Step 1 - Download all package dependencies first.
 # We will redownload dependencies only when packages change.
-COPY package.json package-lock.json ./
+COPY ./src/main/webapp/virtual-lab-ui/package.json ./src/main/webapp/virtual-lab-ui/package-lock.json ./
 RUN npm install
 
 # Step 2 - Copy all source and run build
-COPY . .
+COPY ./src/main/webapp/virtual-lab-ui/. .
 RUN npm run build
 
 ## Stage 2 - Let's build a minimal image with the "deployable package"
