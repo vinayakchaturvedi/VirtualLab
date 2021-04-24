@@ -47,9 +47,14 @@ public class FacultyOperationServiceUtil {
         String dockerFilePath = System.getProperty("user.dir") + "/src/main/resources/dockerfiles/" + labName;
         processBuilder.command("docker", "build", dockerFilePath, "-t", "vinayak96/" + labName);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
-        processBuilder = new ProcessBuilder();
-        processBuilder.command("docker", "push", "vinayak96/" + labName + ":latest");
-        new ExecuteLinuxProcess().executeProcess(processBuilder);
+
+
+        /**
+         * Execute only if there is any change in docker file.
+         processBuilder = new ProcessBuilder();
+         processBuilder.command("docker", "push", "vinayak96/" + labName + ":latest");
+         new ExecuteLinuxProcess().executeProcess(processBuilder);
+         **/
     }
 
 
