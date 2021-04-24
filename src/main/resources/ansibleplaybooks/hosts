@@ -1,2 +1,2 @@
 [Institution_Host]
-172.16.129.38 ansible_user=vinayak
+localhost ansible_user=vinayak

@@ -37,7 +37,8 @@ public class FacultyOperationServiceUtil {
         ProcessBuilder processBuilder = new ProcessBuilder();
         String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/virtual-lab-playbook.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
-        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName, "-i", inventoryPath);
+        String inputParameter = "labName=" + labName;
+        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", inputParameter, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
@@ -45,6 +46,9 @@ public class FacultyOperationServiceUtil {
         ProcessBuilder processBuilder = new ProcessBuilder();
         String dockerFilePath = System.getProperty("user.dir") + "/src/main/resources/dockerfiles/" + labName;
         processBuilder.command("docker", "build", dockerFilePath, "-t", "vinayak96/" + labName);
+        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        processBuilder = new ProcessBuilder();
+        processBuilder.command("docker", "push", "vinayak96/" + labName + ":latest");
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
