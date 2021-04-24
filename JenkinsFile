@@ -1,0 +1,45 @@
+pipeline {
+    agent any
+    environment {
+        frontendImage='rushikesh0203/virtuallab_frontend'
+        backendImage='rushikesh0203/virtuallab_backend'
+        dbImage='rushikesh0203/virtuallab_db'
+        dockerfrontendImage = ''
+        dockerfrontendImageLatest = ''
+        dockerbackendImage = ''
+        dockerbackendImageLatest = ''
+        dockerdbImage = ''
+        dockerdbImageLatest = ''
+   }
+    stages {
+        stage('Git Checkout') {
+            steps {
+                script{
+                    git 'https://github.com/vinayakchaturvedi/VirtualLab'
+                }
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                script{
+
+                    sh 'mvn clean test '
+                }
+            }
+        }
+        stage('Build executable jar') {
+            steps {
+                script{
+                    sh 'mvn -Dmaven.test.skip=true package'
+                }
+            }
+        }
+        stage('Build npm modules') {
+            steps {
+                script{
+                    sh 'npm clean-install --prefix ./src/main/webapp/virtual-lab-ui'
+                }
+            }
+        }
+    }
+}
