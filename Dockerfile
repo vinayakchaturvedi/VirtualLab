@@ -6,6 +6,11 @@ WORKDIR ./
 COPY ./target/virtuallab-0.0.1-SNAPSHOT.jar ./
 COPY ./src/main/resources/ ./src/main/resources
 
+# Install python and ansible
+RUN ["apt-get", "update"]
+RUN ["apt-get", "-y", "install", "python3-pip"]
+RUN ["apt-get", "-y", "install", "ansible"]
+
 # Install docker inside the webserver container
 RUN pip3 install docker
 RUN curl -sSL https://get.docker.com/ | sh
