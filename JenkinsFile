@@ -41,5 +41,31 @@ pipeline {
                 }
             }
         }
+        stage('Building Backend Image') {
+          steps{
+            script {
+              dockerbackendImage = docker.build"$backendImage:${env.BUILD_NUMBER}"
+              dockerbackendImageLatest = docker.build "$backendImage:latest"
+            }
+          }
+        }
+
+        stage('Building Frontend Image') {
+          steps{
+            script {
+              dockerfrontendImage = docker.build ("$frontendImage:${env.BUILD_NUMBER}","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
+              dockerfrontendImageLatest = docker.build ("$frontendImage:latest","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
+            }
+          }
+        }
+
+        stage('Building DB Image') {
+          steps{
+            script {
+              dockerdbImage = docker.build ("$dbImage:${env.BUILD_NUMBER}","-f dbDocker/Dockerfile .")
+              dockerdbImageLatest = docker.build ("$dbImage:latest","-f dbDocker/Dockerfile .")
+            }
+          }
+        }
     }
 }
