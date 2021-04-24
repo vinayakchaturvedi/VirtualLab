@@ -83,11 +83,11 @@ public class StudentOperationServiceUtil {
             String error = "\"stderr\": \"Error: ";
             indexStart = response.indexOf(error);
             indexEnd = response.indexOf("\", \"stderr_lines\"");
-            if (indexStart == -1) return "";
+            if (indexStart == -1) return "Done";
             return "Error: " + response.substring(indexStart + error.length(), indexEnd);
         }
         if (response.length() <= indexStart + output.length() + 10 || indexEnd - 11 <= indexStart + output.length() + 10)
-            return "";
+            return "Done";
         return "Output: " + response.substring(indexStart + output.length() + 10, indexEnd - 11);
     }
 
