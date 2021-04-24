@@ -1,0 +1,13 @@
+---
+- name: Perfrom a specific task in the container
+  hosts: Institution_Host
+  vars:
+    labName: "{{ labName }}"
+    command: "{{ command }}"
+  tasks:
+    - name: Start Container
+      shell:
+        cmd: docker start {{labName}}
+    - name: Execute specified command inside the container
+      shell:
+        cmd: docker exec {{labName}} {{command}}

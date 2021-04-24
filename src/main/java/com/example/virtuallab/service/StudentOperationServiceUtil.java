@@ -41,20 +41,40 @@ public class StudentOperationServiceUtil {
 
     private void executeAnsiblePlaybookToCreateUserOnSpecifiedLabContainer(String labName, String userName) {
         ProcessBuilder processBuilder = new ProcessBuilder();
-        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/create-user-in-container.yml";
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/execute-command-in-container.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
-        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " userName=" + userName, "-i", inventoryPath);
+        String createUserCommand = "'useradd -m -p $(openssl passwd -1 " + userName + ") " + userName + "'";
+        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + createUserCommand, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
-    public String executeCommand(String labName, String studentName, String command) {
-        if (!isValid(command)) {
-            return "Invalid Permission or Commanad";
-        }
+    /*public static void main(String[] args) {
+
+        //docker exec java bash -c "cd /home/MT2020046 && touch Hello.java"
+        //String command = "bash -c \\\"cd /home/MT2020046 && touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\"Hello World\");\t}}' > Hello.java\\\"";
+        String command = "bash -c \\\"cd /home/MT2020046 && touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\\\\\"Hello\tWorld\\\\\");\t}}' > Hello.java\\\"";
+        String command3 = "echo \"public class\" > Hello.java\\\"";
+        new StudentOperationServiceUtil().executeCommand("java", command);
+    }*/
+
+
+    /*
+        Some examples of commandRequest:
+        1. touch Hello.java
+        2. touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\"Hello World\");\t}}' > Hello.java
+     */
+    public String executeCommand(String labName, String userName, String commandRequest) {
+        /*if (!isValid(command)) {
+            return "Invalid Permission or Command";
+        }*/
+
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("bash", "-c", command);
-        String response = new ExecuteLinuxProcess().executeProcess(processBuilder);
-        return response;
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/execute-command-in-container.yml";
+        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
+        String command = "bash -c \\\"cd /home/" + userName + " && " + commandRequest + "\\\"";
+        command = "'" + command + "'";
+        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
+        return new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
     private boolean isValid(String command) {

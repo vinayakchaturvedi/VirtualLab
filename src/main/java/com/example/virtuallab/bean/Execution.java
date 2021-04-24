@@ -2,15 +2,35 @@ package com.example.virtuallab.bean;
 
 public class Execution {
 
+    private String userName;
+    private String labName;
     private String command;
     private String result;
 
     public Execution() {
     }
 
-    public Execution(String command, String result) {
+    public Execution(String userName, String labName, String command, String result) {
+        this.userName = userName;
+        this.labName = labName;
         this.command = command;
         this.result = result;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getLabName() {
+        return labName;
+    }
+
+    public void setLabName(String labName) {
+        this.labName = labName;
     }
 
     public String getCommand() {
@@ -32,7 +52,9 @@ public class Execution {
     @Override
     public String toString() {
         return "Execution{" +
-                "command='" + command + '\'' +
+                "userName='" + userName + '\'' +
+                ", labName='" + labName + '\'' +
+                ", command='" + command + '\'' +
                 ", result='" + result + '\'' +
                 '}';
     }
