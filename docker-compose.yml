@@ -1,0 +1,54 @@
+version: '3.7'
+services:
+  todo-frontend:
+    image: rushikesh0203/virtuallab_frontend:latest
+    ports:
+      - "4200:80"
+    restart: always
+    depends_on:
+      - todo-backend
+    networks:
+      - fullstack-application-network
+    container_name: frontend
+
+  todo-backend:
+    image: rushikesh0203/virtuallab_backend:latest
+    ports:
+      - "8090:8080"
+      - "8700:8700"
+    privileged: true
+    restart: always
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/VirtualLab?createDatabaseIfNotExist=true
+      SPRING_DATASOURCE_USERNAME: VirtualLab
+      SPRING_DATASOURCE_PASSWORD: VirtualLabPass
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - fullstack-application-network
+    container_name: backend
+
+  # Database Service (Mysql)
+  db:
+    image: rushikesh0203/virtuallab_db:latest
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: VirtualLab
+      MYSQL_USER: VirtualLab
+      MYSQL_PASSWORD: VirtualLabPass
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - fullstack-application-network
+    container_name: db
+
+volumes:
+  db-data:
+
+networks:
+  fullstack-application-network:
