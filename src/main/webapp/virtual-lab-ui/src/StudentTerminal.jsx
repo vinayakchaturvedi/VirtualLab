@@ -126,7 +126,7 @@ class StudentTerminal extends Component {
                         descriptions={{
                             execCommand: 'this will execute command run by student'
                         }}
-                        msg='You can write anything here. Example - Hello! My name is Foo and I like Bar.'
+                        msg='Please specify you command like: "execCommand ls"'
                     />
                 </div>
             </div>
