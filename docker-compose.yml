@@ -13,10 +13,23 @@ services:
 
   todo-backend:
     image: rushikesh0203/virtuallab_backend:latest
+    entrypoint: ["/bin/bash","-c"]
+    command:
+    - |
+      rm -f /etc/ssh/ssh_host_ecdsa_key /etc/ssh/ssh_host_rsa_key
+      ssh-keygen -q -N "" -t dsa -f /etc/ssh/ssh_host_ecdsa_key && ssh-keygen -q -N "" -t rsa -f /etc/ssh/ssh_host_rsa_key
+      ssh-keygen -q -t dsa -N '' -f ~/.ssh/id_dsa <<<y 2>&1 >/dev/null && ssh-keygen -q -t rsa -N '' -f ~/.ssh/id_rsa <<<y 2>&1 >/dev/null
+      /etc/init.d/ssh restart
+      echo virtuallab > password.txt
+      sshpass -f password.txt ssh-copy-id -o StrictHostKeyChecking=no virtuallab@172.28.1.1
+      java -jar virtuallab-0.0.1-SNAPSHOT.jar
+    tty: true
     ports:
       - "8090:8080"
       - "8700:8700"
     privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     depends_on:
       - db
@@ -24,8 +37,6 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/VirtualLab?createDatabaseIfNotExist=true
       SPRING_DATASOURCE_USERNAME: VirtualLab
       SPRING_DATASOURCE_PASSWORD: VirtualLabPass
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - fullstack-application-network
     container_name: backend
@@ -36,6 +47,8 @@ services:
     ports:
       - "3306:3306"
     restart: always
+    depends_on:
+      - instituitionserver
     environment:
       MYSQL_DATABASE: VirtualLab
       MYSQL_USER: VirtualLab
@@ -47,8 +60,32 @@ services:
       - fullstack-application-network
     container_name: db
 
+  instituitionserver:
+    image: rushikesh0203/virtuallab_server:latest
+    command:
+      - /bin/bash
+      - -c
+      - |
+        echo "virtuallab:virtuallab" | chpasswd
+        /etc/init.d/ssh restart
+        tail -f /dev/null
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      fullstack-application-network:
+          ipv4_address: '172.28.1.1'
+    container_name: institutionserver
+
+
 volumes:
   db-data:
 
 networks:
   fullstack-application-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+
+
