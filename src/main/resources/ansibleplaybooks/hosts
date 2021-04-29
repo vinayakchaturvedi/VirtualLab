@@ -1,2 +1,2 @@
 [Institution_Host]
-localhost ansible_user=vinayak
+172.28.1.1 ansible_user=virtuallab ansible_python_interpreter=/usr/bin/python3
