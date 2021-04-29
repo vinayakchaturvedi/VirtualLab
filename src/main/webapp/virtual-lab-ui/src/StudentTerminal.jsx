@@ -11,10 +11,15 @@ class StudentTerminal extends Component {
             student: this.props.location.student,
             lab: this.props.location.lab,
             commandToExecute: "",
-            output: ""
+            output: "",
+            showTextBox: false,
+            textBoxContent: ""
         }
         this.execCommandOnServer = this.execCommandOnServer.bind(this)
         this.logout = this.logout.bind(this);
+        this.handleChange = this.handleChange.bind(this)
+        this.submit = this.submit.bind(this)
+        this.getContentFromBackEnd = this.getContentFromBackEnd.bind(this)
     }
 
     componentDidMount() {
@@ -33,9 +38,75 @@ class StudentTerminal extends Component {
         }
     }
 
+    async getContentFromBackEnd() {
+
+        let commandToExecute = 'viRead' + ' Hello.java';
+        let response = await fetch('http://localhost:8700/execCommand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Accept': '*/*'
+            },
+
+            body: JSON.stringify({
+                command: commandToExecute,
+                userName: this.state.student.userName,
+                labName: this.state.lab.labName
+            })
+        })
+        if (response.status === 200) {
+            let output = await response.json()
+            this.setState({
+                showTextBox: true,
+                textBoxContent: output.result
+            })
+        }
+    }
+
+    async submit() {
+        console.log(this.state.textBoxContent.replaceAll(" ", "\\"));
+
+        let commandToExecute = 'viWrite' + ' Hello.java ' + this.state.textBoxContent;
+
+        this.setState({
+            isLoading: true
+        })
+        let response = await fetch('http://localhost:8700/execCommand', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Accept': '*/*'
+            },
+
+            body: JSON.stringify({
+                command: commandToExecute,
+                userName: this.state.student.userName,
+                labName: this.state.lab.labName
+            })
+        }).then(this.setState({
+            isLoading: false
+        }));
+
+        while (this.state.isLoading) {
+        }
+        console.log(response);
+        this.setState({
+            backendResponse: await response.json(),
+
+        }, () => this.setState({
+            output: this.state.backendResponse.result,
+            showTextBox: false,
+            textBoxContent: ""
+        }, () => console.log(this.state.output)))
+    }
 
     async execCommandOnServer() {
         console.log("Executing following command: " + this.state.commandToExecute)
+        if (this.state.commandToExecute.startsWith("vi")) {
+            await this.getContentFromBackEnd();
+            return;
+        }
+
         this.setState({
             isLoading: true
         })
@@ -66,6 +137,15 @@ class StudentTerminal extends Component {
         }, () => console.log(this.state.output)))
     }
 
+    async handleChange(event) {
+        if (event === undefined) return;
+
+        const {name, value} = event.target;
+        this.setState({
+            [name]: value
+        })
+    }
+
     logout() {
         localStorage.removeItem('student');
         localStorage.removeItem('lab');
@@ -73,7 +153,7 @@ class StudentTerminal extends Component {
 
     render() {
         return (
-            <div>
+            <div className="StudentTerminal">
                 <div className="NAV">
                     <nav>
                         <input type="checkbox" id="check"/>
@@ -89,10 +169,27 @@ class StudentTerminal extends Component {
                         </ul>
                     </nav>
                 </div>
-
                 <div
                     style={{
-                        display: "flex",
+                        display: this.state.showTextBox ? "flex" : "none",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "80vh"
+                    }}
+                >
+                    <textarea
+                        name="textBoxContent"
+                        required="True"
+                        placeholder="Write your text here"
+                        value={this.state.textBoxContent}
+                        onChange={this.handleChange}
+                    />
+                    <button onClick={this.submit} className="CreateLab">Submit</button>
+                </div>
+                <div
+                    style={{
+                        display: this.state.showTextBox ? "none" : "flex",
                         width: "100%",
                         justifyContent: "center",
                         alignItems: "center",

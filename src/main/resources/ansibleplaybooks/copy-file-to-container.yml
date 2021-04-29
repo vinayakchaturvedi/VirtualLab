@@ -3,11 +3,12 @@
   hosts: Institution_Host
   vars:
     labName: "{{ labName }}"
-    command: "{{ command }}"
+    sourcePath: "{{ sourcePath }}"
+    destPath: "{{ destPath }}"
   tasks:
     - name: Start Container
       shell:
         cmd: docker start {{labName}}
-    - name: Execute specified command inside the container
+    - name: Copy file
       shell:
-        cmd: docker exec {{labName}} {{command}} > /home/vinayak/output.txt
+        cmd: docker cp {{sourcePath}} {{destPath}}

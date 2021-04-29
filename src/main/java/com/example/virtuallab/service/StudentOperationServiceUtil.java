@@ -2,6 +2,7 @@ package com.example.virtuallab.service;
 
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.utils.FileOperation;
 import com.example.virtuallab.utils.ListOfValidCommands;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,47 +49,51 @@ public class StudentOperationServiceUtil {
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
-    /*public static void main(String[] args) {
-
-        //docker exec java bash -c "cd /home/MT2020046 && touch Hello.java"
-        //String command = "bash -c \\\"cd /home/MT2020046 && touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\"Hello World\");\t}}' > Hello.java\\\"";
-        String command = "bash -c \\\"cd /home/MT2020046 && touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\\\\\"Hello\tWorld\\\\\");\t}}' > Hello.java\\\"";
-        String command3 = "echo \"public class\" > Hello.java\\\"";
-        new StudentOperationServiceUtil().executeCommand("java", command);
-    }*/
-
-
-    /*
-        Some examples of commandRequest:
-        1. touch Hello.java
-        2. touch Hello.java && echo 'public\tclass\tHello\t{\tpublic\tstatic\tvoid\tmain(String[]\targs)\t{\tSystem.out.println(\"Hello World\");\t}}' > Hello.java
-     */
     public String executeCommand(String labName, String userName, String commandRequest) {
         /*if (!isValid(command)) {
             return "Invalid Permission or Command";
         }*/
+        if (commandRequest.split(" ")[0].equals("viWrite")) {
+            handleViWrite(labName, userName, commandRequest);
+            return "Done";
+        } else if (commandRequest.split(" ")[0].equals("viRead")) {
+            return handleViRead(labName, userName, commandRequest);
+        }
 
         ProcessBuilder processBuilder = new ProcessBuilder();
         String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/execute-command-in-container.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String command = "bash -c \\\"cd /home/" + userName + " && " + commandRequest + "\\\"";
         command = "'" + command + "'";
-        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
-        String response = new ExecuteLinuxProcess().executeProcess(processBuilder);
-        response = response.substring(response.indexOf("TASK [Execute specified command inside the container]"));
-        String output = "\"shell_result.stdout_lines\": [";
-        int indexStart = response.indexOf(output);
-        int indexEnd = response.indexOf("PLAY RECAP");
-        if (indexStart == -1) {
-            String error = "\"stderr\": \"Error: ";
-            indexStart = response.indexOf(error);
-            indexEnd = response.indexOf("\", \"stderr_lines\"");
-            if (indexStart == -1) return "Done";
-            return "Error: " + response.substring(indexStart + error.length(), indexEnd);
-        }
-        if (response.length() <= indexStart + output.length() + 10 || indexEnd - 11 <= indexStart + output.length() + 10)
-            return "Done";
-        return "Output: " + response.substring(indexStart + output.length() + 10, indexEnd - 11);
+        processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
+        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        return new FileOperation().readFile("/home/vinayak/output.txt");
+    }
+
+    private String handleViRead(String labName, String userName, String commandRequest) {
+        String fileName = commandRequest.split(" ")[1];
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
+        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
+        String sourcePath = labName + ":/home/" + userName + "/" + fileName;
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + System.getProperty("user.dir"), "-i", inventoryPath);
+        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        return new FileOperation().readFile(fileName);
+    }
+
+    private void handleViWrite(String labName, String userName, String commandRequest) {
+        String fileName = commandRequest.split(" ")[1];
+        String content = commandRequest.substring(3 + fileName.length() + 1);
+        new FileOperation().writeToFile(fileName, content);
+
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
+        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
+        String sourcePath = System.getProperty("user.dir") + "/" + fileName;
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/" + userName, "-i", inventoryPath);
+        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        new FileOperation().deleteFile(fileName);
     }
 
     private boolean isValid(String command) {

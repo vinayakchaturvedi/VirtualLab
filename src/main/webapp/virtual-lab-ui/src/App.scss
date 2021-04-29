@@ -50,6 +50,7 @@
   margin-top: 5px;
   position: relative;
   z-index: 99;
+
   .container {
     display: flex;
     justify-content: center;
@@ -65,6 +66,7 @@
     padding: 17px 10px;
     //transition: transform 200ms ease-in-out;
   }
+
   .right-side {
     display: flex;
     flex-direction: column;
@@ -83,13 +85,16 @@
     &.right {
       right: -40%;
       align-items: flex-end;
+
       &:hover {
         right: -45%;
       }
     }
+
     &.left {
       right: 40%;
       align-items: flex-start;
+
       &:hover {
         right: 45%;
       }
@@ -115,9 +120,11 @@
   border-radius: 3px;
   transition: all 250ms ease-in-out;
   cursor: pointer;
+
   &:hover {
     background-color: #2386c8;
   }
+
   &:focus {
     outline: none;
   }
@@ -233,13 +240,13 @@ body {
   color: white;
 }
 
-.FacultyHome .StudentDetails label{
+.FacultyHome .StudentDetails label {
   text-align: left;
   font-size: 1.5vw;
   color: antiquewhite;
 }
 
-.FacultyHome .StudentDetails input{
+.FacultyHome .StudentDetails input {
   background-color: #394d60;
   color: white;
   padding: 12px;
@@ -250,6 +257,20 @@ body {
   -webkit-appearance: button;
   outline: none;
 }
+
+.StudentTerminal textarea {
+  background-color: #394d60;
+  color: white;
+  padding: 12px;
+  width: 50%;
+  height: 90%;
+  border: none;
+  font-size: 20px;
+  box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+  -webkit-appearance: button;
+  outline: none;
+}
+
 
 nav {
   height: 80px;
