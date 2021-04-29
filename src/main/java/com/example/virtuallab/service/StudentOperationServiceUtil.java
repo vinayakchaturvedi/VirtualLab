@@ -1,7 +1,9 @@
 package com.example.virtuallab.service;
 
+import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.utils.Constants;
 import com.example.virtuallab.utils.FileOperation;
 import com.example.virtuallab.utils.ListOfValidCommands;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -17,7 +19,8 @@ public class StudentOperationServiceUtil {
     private LabOperationService labOperationService;
     @Autowired
     private StudentOperationService studentOperationService;
-
+    @Autowired
+    private CommandExecutionService commandExecutionService;
 
     public Lab labRegistration(JsonNode jsonNode) {
         int studentId = jsonNode.get("studentId").asInt();
@@ -49,15 +52,23 @@ public class StudentOperationServiceUtil {
         new ExecuteLinuxProcess().executeProcess(processBuilder);
     }
 
-    public String executeCommand(String labName, String userName, String commandRequest) {
+    public Execution executeCommand(Execution execution) {
         /*if (!isValid(command)) {
             return "Invalid Permission or Command";
         }*/
+        String labName = execution.getLabName();
+        String userName = execution.getUserName();
+        String commandRequest = execution.getCommand();
+
+        String linuxCommand = commandRequest.split(" ")[0];
+
         if (commandRequest.split(" ")[0].equals("viWrite")) {
             handleViWrite(labName, userName, commandRequest);
-            return "Done";
+            execution.setResult("Done");
+            return execution;
         } else if (commandRequest.split(" ")[0].equals("viRead")) {
-            return handleViRead(labName, userName, commandRequest);
+            execution.setResult(handleViRead(labName, userName, commandRequest));
+            return execution;
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder();
@@ -67,7 +78,16 @@ public class StudentOperationServiceUtil {
         command = "'" + command + "'";
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
-        return new FileOperation().readFile("/home/vinayak/output.txt");
+        String output = new FileOperation().readFile("/home/vinayak/output.txt");
+        execution.setResult(output.isEmpty() ? "Done" : output);
+        if (Constants.commandToStore.contains(linuxCommand)) {
+            storeExecutionToMongoDB(execution);
+        }
+        return execution;
+    }
+
+    private void storeExecutionToMongoDB(Execution execution) {
+        commandExecutionService.save(execution);
     }
 
     private String handleViRead(String labName, String userName, String commandRequest) {

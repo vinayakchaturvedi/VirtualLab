@@ -7,4 +7,5 @@ import java.util.Set;
 public class Constants {
 
     public static final Set<String> VALID_LABS = new HashSet<>(Arrays.asList("java", "python", "c_lang"));
+    public static final Set<String> commandToStore = new HashSet<>(Arrays.asList("javac", "python3", "gcc"));
 }
