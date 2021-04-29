@@ -1,15 +1,18 @@
 package com.example.virtuallab.utils;
 
 import com.example.virtuallab.bean.Execution;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Scanner;
 
 public class FileOperation {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileOperation.class);
 
     public String readFile(String fileName) {
         StringBuilder response = new StringBuilder("");
@@ -22,8 +25,7 @@ public class FileOperation {
             myReader.close();
             return response.toString();
         } catch (FileNotFoundException e) {
-            System.out.println("File doesn't exist on container");
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
             return "";
         }
     }
@@ -47,11 +49,11 @@ public class FileOperation {
             execution.setSuccessfulExecution(false);
             return execution;
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         } catch (ParseException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         }
         execution.setResult("Error");
         execution.setSuccessfulExecution(false);
@@ -63,19 +65,16 @@ public class FileOperation {
             FileWriter myWriter = new FileWriter(fileName);
             myWriter.write(content);
             myWriter.close();
-            System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         }
     }
 
     public void deleteFile(String fileName) {
         File myObj = new File(fileName);
-        if (myObj.delete()) {
-            System.out.println("Deleted the file: " + myObj.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
+        if (!myObj.delete()) {
+            LOGGER.error("Failed to delete the file: " + fileName);
+
         }
     }
 }

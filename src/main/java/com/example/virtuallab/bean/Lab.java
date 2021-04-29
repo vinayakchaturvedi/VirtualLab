@@ -1,5 +1,9 @@
 package com.example.virtuallab.bean;
 
+import com.example.virtuallab.service.ExecuteLinuxProcess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -7,6 +11,8 @@ import java.util.List;
 
 @Entity
 public class Lab implements Cloneable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Lab.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -107,7 +113,7 @@ public class Lab implements Cloneable {
                 clonedLab.faculty = null;
             return clonedLab;
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         }
         return null;
     }

@@ -7,6 +7,8 @@ import com.example.virtuallab.service.LabOperationService;
 import com.example.virtuallab.service.StudentOperationService;
 import com.example.virtuallab.service.StudentOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +20,7 @@ import java.util.*;
 @RestController
 public class StudentOperationController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StudentOperationController.class);
     @Autowired
     private StudentOperationService studentOperationService;
     @Autowired
@@ -132,7 +135,9 @@ public class StudentOperationController {
 
     @PostMapping(value = "/execCommand", produces = {"application/json"})
     public ResponseEntity<Execution> execCommand(@RequestBody Execution execution) {
-        System.out.println("Command Execution request: " + execution);
-        return new ResponseEntity<>(studentOperationServiceUtil.executeCommand(execution), HttpStatus.OK);
+        LOGGER.info("Command Execution request: " + execution);
+        execution = studentOperationServiceUtil.executeCommand(execution);
+        LOGGER.info("Command Execution response: " + execution);
+        return new ResponseEntity<>(execution, HttpStatus.OK);
     }
 }

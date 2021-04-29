@@ -2,8 +2,12 @@ package com.example.virtuallab.service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ExecuteLinuxProcess {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteLinuxProcess.class);
 
     public String executeProcess(ProcessBuilder processBuilder) {
         StringBuffer result = new StringBuffer();
@@ -19,9 +23,9 @@ public class ExecuteLinuxProcess {
             while ((line = reader.readLine()) != null) {
                 result.append(line).append("\n");
             }
-            System.out.println("Ansible output: " + result);
+            LOGGER.info("Ansible output: " + result);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         }
         return result.toString();
     }

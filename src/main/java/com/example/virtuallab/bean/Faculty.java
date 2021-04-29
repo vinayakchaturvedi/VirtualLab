@@ -1,11 +1,17 @@
 package com.example.virtuallab.bean;
 
+import com.example.virtuallab.utils.FileOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Faculty implements Cloneable {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Faculty.class);
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -106,7 +112,7 @@ public class Faculty implements Cloneable {
             }
             return clonedFaculty;
         } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getLocalizedMessage());
         }
         return null;
     }
