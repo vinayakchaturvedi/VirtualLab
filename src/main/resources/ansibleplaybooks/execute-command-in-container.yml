@@ -10,4 +10,12 @@
         cmd: docker start {{labName}}
     - name: Execute specified command inside the container
       shell:
-        cmd: docker exec {{labName}} {{command}} > /home/vinayak/output.txt
+        cmd: docker exec {{labName}} {{command}}
+      ignore_errors: yes
+      register: shell_result
+    - debug:
+        var: shell_result
+    - name: Save output to a file
+      copy:
+        content: "{{ shell_result }}"
+        dest: "./output.json"

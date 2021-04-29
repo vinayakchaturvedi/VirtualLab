@@ -40,7 +40,7 @@ class StudentTerminal extends Component {
 
     async getContentFromBackEnd() {
 
-        let commandToExecute = 'viRead' + ' Hello.java';
+        let commandToExecute = 'viRead ' + this.state.commandToExecute.split(" ")[1];
         let response = await fetch('http://localhost:8700/execCommand', {
             method: 'POST',
             headers: {
@@ -66,7 +66,7 @@ class StudentTerminal extends Component {
     async submit() {
         console.log(this.state.textBoxContent.replaceAll(" ", "\\"));
 
-        let commandToExecute = 'viWrite' + ' Hello.java ' + this.state.textBoxContent;
+        let commandToExecute = 'viWrite ' + this.state.commandToExecute.split(" ")[1] + ' ' + this.state.textBoxContent;
 
         this.setState({
             isLoading: true

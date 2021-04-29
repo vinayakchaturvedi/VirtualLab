@@ -1,9 +1,12 @@
 package com.example.virtuallab.utils;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
+import com.example.virtuallab.bean.Execution;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.io.*;
 import java.util.Scanner;
 
 public class FileOperation {
@@ -23,6 +26,36 @@ public class FileOperation {
             e.printStackTrace();
             return "";
         }
+    }
+
+    public Execution readJsonFile(String fileName, Execution execution) {
+        JSONParser jsonParser = new JSONParser();
+
+        try (FileReader reader = new FileReader(fileName)) {
+            //Read JSON file
+            Object obj = jsonParser.parse(reader);
+
+            JSONObject object = (JSONObject) obj;
+            String error = (String) object.get("stderr");
+            String output = (String) object.get("stdout");
+            if (error.isEmpty()) {
+                execution.setResult(output);
+                execution.setSuccessfulExecution(true);
+                return execution;
+            }
+            execution.setResult(error);
+            execution.setSuccessfulExecution(false);
+            return execution;
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        execution.setResult("Error");
+        execution.setSuccessfulExecution(false);
+        return execution;
     }
 
     public void writeToFile(String fileName, String content) {

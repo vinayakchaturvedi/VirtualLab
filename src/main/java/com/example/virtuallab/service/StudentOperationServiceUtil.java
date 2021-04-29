@@ -67,8 +67,7 @@ public class StudentOperationServiceUtil {
             execution.setResult("Done");
             return execution;
         } else if (commandRequest.split(" ")[0].equals("viRead")) {
-            execution.setResult(handleViRead(labName, userName, commandRequest));
-            return execution;
+            return handleViRead(execution);
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder();
@@ -78,8 +77,7 @@ public class StudentOperationServiceUtil {
         command = "'" + command + "'";
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
         new ExecuteLinuxProcess().executeProcess(processBuilder);
-        String output = new FileOperation().readFile("/home/vinayak/output.txt");
-        execution.setResult(output.isEmpty() ? "Done" : output);
+        new FileOperation().readJsonFile("/home/vinayak/output.json", execution);
         if (Constants.commandToStore.contains(linuxCommand)) {
             storeExecutionToMongoDB(execution);
         }
@@ -90,21 +88,26 @@ public class StudentOperationServiceUtil {
         commandExecutionService.save(execution);
     }
 
-    private String handleViRead(String labName, String userName, String commandRequest) {
-        String fileName = commandRequest.split(" ")[1];
+    private Execution handleViRead(Execution execution) {
+        String labName = execution.getLabName();
+        String userName = execution.getUserName();
+        String commandRequest = execution.getCommand();
 
-        ProcessBuilder processBuilder = new ProcessBuilder();
-        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
-        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
-        String sourcePath = labName + ":/home/" + userName + "/" + fileName;
-        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + System.getProperty("user.dir"), "-i", inventoryPath);
-        new ExecuteLinuxProcess().executeProcess(processBuilder);
-        return new FileOperation().readFile(fileName);
+        String fileName = commandRequest.split(" ")[1];
+        execution.setCommand("cat " + fileName);
+        execution = executeCommand(execution);
+        if (!execution.isSuccessfulExecution()) {
+            execution.setCommand("touch " + fileName);
+            execution = executeCommand(execution);
+            execution.setCommand("cat " + fileName);
+            execution = executeCommand(execution);
+        }
+        return execution;
     }
 
     private void handleViWrite(String labName, String userName, String commandRequest) {
         String fileName = commandRequest.split(" ")[1];
-        String content = commandRequest.substring(3 + fileName.length() + 1);
+        String content = commandRequest.substring(7 + fileName.length() + 1);
         new FileOperation().writeToFile(fileName, content);
 
         ProcessBuilder processBuilder = new ProcessBuilder();
