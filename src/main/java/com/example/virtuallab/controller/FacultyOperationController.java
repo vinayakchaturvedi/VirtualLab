@@ -128,4 +128,17 @@ public class FacultyOperationController {
         String message = "Lab with id: " + id + " removed successfully";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
+
+    @GetMapping("/getLabByLabName/{labName}")
+    public ResponseEntity<Lab> getLabByLabName(@PathVariable String labName) {
+        Iterable<Lab> all = labOperationService.findAll();
+        final Lab[] response = {null};
+        all.forEach(lab -> {
+            if (lab.getLabName().equals(labName))
+                response[0] = lab.shallowCopy(false);
+        });
+        if (response[0] == null)
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response[0], HttpStatus.OK);
+    }
 }

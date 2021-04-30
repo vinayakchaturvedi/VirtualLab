@@ -140,4 +140,38 @@ public class StudentOperationController {
         LOGGER.info("Command Execution response: " + execution);
         return new ResponseEntity<>(execution, HttpStatus.OK);
     }
+
+    @GetMapping("/getSize/{userName}")
+    public ResponseEntity<String> getSizeOfDirectories(@PathVariable String userName) {
+        Execution execution = new Execution();
+        int totalSize = 0;
+        String unit = " KB";
+        execution.setCommand("du -sh");
+        execution.setUserName(userName);
+        Iterable<Student> all = studentOperationService.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student.shallowCopy(true);
+        });
+        for (Lab labs : response[0].getLabs()) {
+            execution.setLabName(labs.getLabName());
+            execution = studentOperationServiceUtil.executeCommand(execution);
+            String size = execution.getResult().split("\t")[0];
+            totalSize += Integer.parseInt(size.substring(0, size.length() - 1));
+        }
+        LOGGER.info("Total size used by " + userName + " is " + totalSize + unit);
+        return new ResponseEntity<>(totalSize + unit, HttpStatus.OK);
+    }
+
+    @GetMapping("/getNumberOfLabs/{userName}")
+    public ResponseEntity<String> getNumberOfLabs(@PathVariable String userName) {
+        Iterable<Student> all = studentOperationService.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student.shallowCopy(true);
+        });
+        return new ResponseEntity<>(String.valueOf(response[0].getLabs().size()), HttpStatus.OK);
+    }
 }
