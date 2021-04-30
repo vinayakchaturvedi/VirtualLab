@@ -32,7 +32,7 @@ class IndexPanel extends React.Component {
     render() {
         const {isLogginActive} = this.state;
         const current = isLogginActive ? "Register" : "Login";
-        const currentActive = isLogginActive ? "login" : "register";
+        const currentActive = isLogginActive ? "loginHook" : "register";
         return (
             <div className="App">
                 <div className="login">

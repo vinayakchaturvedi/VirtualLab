@@ -1,7 +1,8 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 // react plugin for creating charts
 // import ChartistGraph from "react-chartist";
 // @material-ui/core
+// @material-ui/core components
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
@@ -17,14 +18,18 @@ import Cloud from "@material-ui/icons/Cloud";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import Table from "components/Table/Table.js";
 // import Tasks from "components/Tasks/Tasks.js";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
-import CardBody from "components/Card/CardBody.js";
-
+// creates a beautiful scrollbar
+import PerfectScrollbar from "perfect-scrollbar";
+import "perfect-scrollbar/css/perfect-scrollbar.css";
+// core components
+import Sidebar from "components/Sidebar/Sidebar.js";
+// import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+import "assets/css/material-dashboard-react.css?v=1.9.0";
 // import { cpp, java, python } from "variables/general.js";
 // import {
 //   dailySalesChart,
@@ -33,19 +38,34 @@ import CardBody from "components/Card/CardBody.js";
 // } from "variables/charts.js";
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import Button from "../../components/CustomButtons/Button";
+import routes from "../../routes";
+import logo from "../../assets/img/reactlogo.png";
+import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
+
+let ps;
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard(props) {
+export default function Dashboard({...rest}) {
 
+    const classes = useStyles();
     const [size, setSize] = useState('');
-    const [numberOfLabs, setNumberOfLabs] = useState('');
+    const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);
 
     const [cppLabDesc, setCppLabDesc] = useState(undefined);
     const [javaLabDesc, setJavaLabDesc] = useState(undefined);
     const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
-    console.log("Received Student: ", props.location.student)
+    const [student, setStudent] = useState(rest.history.location.state.student)
+    const [allLabs, setAllLabs] = useState({});
+    const [registeredLab, setRegisteredLab] = useState(() => {
+        const tempRegisteredLab = {}
+        student.labs.forEach(lab => {
+            tempRegisteredLab[lab.labName] = lab
+        })
+        return tempRegisteredLab;
+    });
 
+    console.log("registeredLab: ", registeredLab);
 
     useState(() => {
         fetch(
@@ -64,7 +84,7 @@ export default function Dashboard(props) {
             .catch(error => console.log(error));
 
         fetch(
-            'http://localhost:8700/getNumberOfLabs/MT2020046/', {
+            'http://localhost:8700/findAllLabs', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -72,9 +92,13 @@ export default function Dashboard(props) {
                 },
             }
         )
-            .then(res => res.text())
+            .then(res => res.json())
             .then(response => {
-                setNumberOfLabs(response)
+                let currObj = {};
+                response.forEach(lab => {
+                    currObj[lab.labName] = lab;
+                })
+                setAllLabs(currObj)
             })
             .catch(error => console.log(error));
 
@@ -122,200 +146,251 @@ export default function Dashboard(props) {
             .catch(error => console.log(error));
     });
 
-    const classes = useStyles();
+    // ref to help us initialize PerfectScrollbar on windows devices
+    const mainPanel = React.createRef();
+    // states and functions
+    const [image, setImage] = React.useState(bgImage);
+    const [color, setColor] = React.useState("blue");
+    // const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
+    const [mobileOpen, setMobileOpen] = React.useState(false);
+    // const handleImageClick = image => {
+    //   setImage(image);
+    // };
+    // const handleColorClick = color => {
+    //   setColor(color);
+    // };
+    // const handleFixedClick = () => {
+    //   if (fixedClasses === "dropdown") {
+    //     setFixedClasses("dropdown show");
+    //   } else {
+    //     setFixedClasses("dropdown");
+    //   }
+    // };
+    const handleDrawerToggle = () => {
+        setMobileOpen(!mobileOpen);
+    };
+    const getRoute = () => {
+        return window.location.pathname !== "/admin/maps";
+    };
+    const resizeFunction = () => {
+        if (window.innerWidth >= 960) {
+            setMobileOpen(false);
+        }
+    };
+    // initialize and destroy the PerfectScrollbar plugin
+    React.useEffect(() => {
+        if (navigator.platform.indexOf("Win") > -1) {
+            ps = new PerfectScrollbar(mainPanel.current, {
+                suppressScrollX: true,
+                suppressScrollY: false
+            });
+            document.body.style.overflow = "hidden";
+        }
+        window.addEventListener("resize", resizeFunction);
+        // Specify how to clean up after this effect:
+        return function cleanup() {
+            if (navigator.platform.indexOf("Win") > -1) {
+                ps.destroy();
+            }
+            window.removeEventListener("resize", resizeFunction);
+        };
+    }, [mainPanel]);
+
+
+    const labItem = [];
+
+    for (let allLabsKey in allLabs) {
+
+    }
+
     return (
-        <div>
-            <GridContainer>
-                <GridItem xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardHeader color="warning" stats icon>
-                            <CardIcon color="warning">
-                                <Icon>content_copy</Icon>
-                            </CardIcon>
-                            <p className={classes.cardCategory}>Used Space</p>
-                            <h3 className={classes.cardTitle}>
-                                {size}
-                            </h3>
-                        </CardHeader>
-                    </Card>
-                </GridItem>
-                <GridItem xs={12} sm={6} md={3}>
-                    <Card>
-                        <CardHeader color="success" stats icon>
-                            <CardIcon color="success">
-                                <Store/>
-                            </CardIcon>
-                            <p className={classes.cardCategory}>Registered Labs</p>
-                            <h3 className={classes.cardTitle}>{numberOfLabs}</h3>
-                        </CardHeader>
-                    </Card>
-                </GridItem>
-                {/* <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="danger" stats icon>
-              <CardIcon color="danger">
-                <Icon>info_outline</Icon>
-              </CardIcon>
-              <p className={classes.cardCategory}>Fixed Issues</p>
-              <h3 className={classes.cardTitle}>75</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <LocalOffer />
-                Tracked from Github
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={6} md={3}>
-          <Card>
-            <CardHeader color="info" stats icon>
-              <CardIcon color="info">
-                <Accessibility />
-              </CardIcon>
-              <p className={classes.cardCategory}>Followers</p>
-              <h3 className={classes.cardTitle}>+245</h3>
-            </CardHeader>
-            <CardFooter stats>
-              <div className={classes.stats}>
-                <Update />
-                Just Updated
-              </div>
-            </CardFooter>
-          </Card>
-        </GridItem> */}
-            </GridContainer>
-            <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                    <CustomTabs
-                        title="Labs :"
-                        headerColor="primary"
-                        tabs={[
-                            {
-                                tabName: "C++",
-                                tabIcon: BugReport,
-                                tabContent: (
-                                    <div>
-                                        <Button
-                                            color="info"
-                                            target="_blank"
-                                            round
-                                        >Use Lab</Button>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Conducted By: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
-                                        </div>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Creation Date: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabName: "Java",
-                                tabIcon: Code,
-                                tabContent: (
-                                    <div>
-                                        <Button
-                                            color="info"
-                                            target="_blank"
-                                            round
-                                        >Use Lab</Button>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Conducted By: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{javaLabDesc === undefined ? "" : javaLabDesc.faculty.facultyName}</p>
-                                        </div>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Creation Date: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{javaLabDesc === undefined ? "" : javaLabDesc.creationDate}</p>
-                                        </div>
-                                    </div>
-                                )
-                            },
-                            {
-                                tabName: "Python",
-                                tabIcon: Cloud,
-                                tabContent: (
-                                    <div>
-                                        <Button
-                                            color="info"
-                                            target="_blank"
-                                            round
-                                        >Use Lab</Button>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Conducted By: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.faculty.facultyName}</p>
-                                        </div>
-                                        <div>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "200%",
-                                                color: "#a38282", padding: "2%"
-                                            }}>Creation Date: </p>
-                                            <p style={{
-                                                display: "inline-block", fontSize: "180%",
-                                                padding: "2%"
-                                            }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.creationDate}</p>
-                                        </div>
-                                    </div>
-                                )
-                            }
-                        ]}
-                    />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                    <Card>
-                        <CardHeader color="warning">
-                            <h4 className={classes.cardTitleWhite}>Employees Stats</h4>
-                            <p className={classes.cardCategoryWhite}>
-                                New employees on 15th September, 2016
-                            </p>
-                        </CardHeader>
-                        <CardBody>
-                            <Table
-                                tableHeaderColor="warning"
-                                tableHead={["ID", "Name", "Salary", "Country"]}
-                                tableData={[
-                                    ["1", "Dakota Rice", "$36,738", "Niger"],
-                                    ["2", "Minerva Hooper", "$23,789", "Curaçao"],
-                                    ["3", "Sage Rodriguez", "$56,142", "Netherlands"],
-                                    ["4", "Philip Chaney", "$38,735", "Korea, South"]
-                                ]}
-                            />
-                        </CardBody>
-                    </Card>
-                </GridItem>
-            </GridContainer>
+        <div className={classes.wrapper}>
+            <Sidebar
+                routes={routes}
+                logoText={"Virtual Lab"}
+                logo={logo}
+                image={image}
+                handleDrawerToggle={handleDrawerToggle}
+                open={mobileOpen}
+                color={color}
+                {...rest}
+            />
+            <div className={classes.mainPanel} ref={mainPanel}>
+                <h2>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span></h2>
+                <div className={classes.map}>
+                    <div style={{marginTop: "3%"}}>
+                        <GridContainer>
+                            <GridItem xs={12} sm={6} md={3}>
+                                <Card>
+                                    <CardHeader color="warning" stats icon>
+                                        <CardIcon color="warning">
+                                            <Icon>content_copy</Icon>
+                                        </CardIcon>
+                                        <p className={classes.cardCategory}>Used Space</p>
+                                        <h3 className={classes.cardTitle}>
+                                            {size}
+                                        </h3>
+                                    </CardHeader>
+                                </Card>
+                            </GridItem>
+                            <GridItem xs={12} sm={6} md={3}>
+                                <Card>
+                                    <CardHeader color="success" stats icon>
+                                        <CardIcon color="success">
+                                            <Store/>
+                                        </CardIcon>
+                                        <p className={classes.cardCategory}>Registered Labs</p>
+                                        <h3 className={classes.cardTitle}>{numberOfLabs}</h3>
+                                    </CardHeader>
+                                </Card>
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={6}>
+                                <CustomTabs
+                                    title="Labs :"
+                                    headerColor="primary"
+                                    tabs={[
+                                        {
+                                            tabName: "C Language",
+                                            display: cppLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: registeredLab.c_lang === undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Use Lab</Button>
+                                                    </div>
+                                                    <div
+                                                        style={{display: registeredLab.c_lang !== undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Register</Button>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Conducted By: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Creation Date: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Java",
+                                            display: javaLabDesc !== undefined,
+                                            tabIcon: Code,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: registeredLab.java === undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Use Lab</Button>
+                                                    </div>
+                                                    <div
+                                                        style={{display: registeredLab.java !== undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Register</Button>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Conducted By: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{javaLabDesc === undefined ? "" : javaLabDesc.faculty.facultyName}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Creation Date: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{javaLabDesc === undefined ? "" : javaLabDesc.creationDate}</p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Python",
+                                            display: pythonLabDesc !== undefined,
+                                            tabIcon: Cloud,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: registeredLab.python === undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Use Lab</Button>
+                                                    </div>
+                                                    <div
+                                                        style={{display: registeredLab.python !== undefined ? "none" : "block"}}>
+                                                        <Button
+                                                            color="info"
+                                                            target="_blank"
+                                                            round
+                                                        >Register</Button>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Conducted By: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.faculty.facultyName}</p>
+                                                    </div>
+                                                    <div>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Creation Date: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.creationDate}</p>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    ]}
+                                />
+                            </GridItem>
+                        </GridContainer>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

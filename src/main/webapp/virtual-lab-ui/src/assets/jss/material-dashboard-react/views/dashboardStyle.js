@@ -2,10 +2,27 @@ import {
   successColor,
   whiteColor,
   grayColor,
-  hexToRgb
+  hexToRgb, drawerWidth, transition
 } from "assets/jss/material-dashboard-react.js";
 
-const dashboardStyle = {
+const dashboardStyle = theme => ({
+  wrapper: {
+    position: "relative",
+    top: "0",
+    height: "100vh"
+  },
+  mainPanel: {
+    [theme.breakpoints.up("md")]: {
+      width: `calc(100% - ${drawerWidth}px)`
+    },
+    overflow: "auto",
+    position: "relative",
+    float: "right",
+    ...transition,
+    maxHeight: "100%",
+    width: "100%",
+    overflowScrolling: "touch"
+  },
   successText: {
     color: successColor[0]
   },
@@ -77,6 +94,6 @@ const dashboardStyle = {
       lineHeight: "1"
     }
   }
-};
+});
 
 export default dashboardStyle;

@@ -1,5 +1,5 @@
 import React from "react";
-// import loginImg from "../../login.svg";
+// import loginImg from "../../loginHook.svg";
 import imglog from "../../llo.png";
 import "./style.scss";
 import {withRouter} from "react-router-dom";
