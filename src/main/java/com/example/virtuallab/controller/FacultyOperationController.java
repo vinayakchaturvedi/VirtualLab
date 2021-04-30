@@ -135,7 +135,7 @@ public class FacultyOperationController {
         final Lab[] response = {null};
         all.forEach(lab -> {
             if (lab.getLabName().equals(labName))
-                response[0] = lab.shallowCopy(false);
+                response[0] = lab.shallowCopy(true);
         });
         if (response[0] == null)
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
