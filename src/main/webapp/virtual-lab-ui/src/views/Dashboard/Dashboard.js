@@ -6,8 +6,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
-import Warning from "@material-ui/icons/Warning";
-import DateRange from "@material-ui/icons/DateRange";
 // import LocalOffer from "@material-ui/icons/LocalOffer";
 // import Update from "@material-ui/icons/Update";
 // import ArrowUpward from "@material-ui/icons/ArrowUpward";
@@ -22,12 +20,10 @@ import GridContainer from "components/Grid/GridContainer.js";
 import Table from "components/Table/Table.js";
 // import Tasks from "components/Tasks/Tasks.js";
 import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Danger from "components/Typography/Danger.js";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardIcon from "components/Card/CardIcon.js";
 import CardBody from "components/Card/CardBody.js";
-import CardFooter from "components/Card/CardFooter.js";
 
 // import { cpp, java, python } from "variables/general.js";
 // import {
@@ -40,14 +36,20 @@ import Button from "../../components/CustomButtons/Button";
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard() {
+export default function Dashboard(props) {
 
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState('');
 
-    useEffect(() => {
+    const [cppLabDesc, setCppLabDesc] = useState(undefined);
+    const [javaLabDesc, setJavaLabDesc] = useState(undefined);
+    const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
+    console.log("Received Student: ", props.location.student)
+
+
+    useState(() => {
         fetch(
-                'http://localhost:8700/getSize/MT2020046/', {
+            'http://localhost:8700/getSize/MT2020046/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -76,6 +78,48 @@ export default function Dashboard() {
             })
             .catch(error => console.log(error));
 
+        fetch(
+            'http://localhost:8700/getLabByLabName/java/', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                setJavaLabDesc(response)
+            })
+            .catch(error => console.log(error));
+        fetch(
+            'http://localhost:8700/getLabByLabName/python/', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                setPythonLabDesc(response)
+            })
+            .catch(error => console.log(error));
+        fetch(
+            'http://localhost:8700/getLabByLabName/cpp/', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                setCppLabDesc(response)
+            })
+            .catch(error => console.log(error));
     });
 
     const classes = useStyles();
@@ -151,33 +195,99 @@ export default function Dashboard() {
                                 tabName: "C++",
                                 tabIcon: BugReport,
                                 tabContent: (
-                                    <Button
-                                        color="info"
-                                        target="_blank"
-                                        round
-                                    >Use Lab</Button>
+                                    <div>
+                                        <Button
+                                            color="info"
+                                            target="_blank"
+                                            round
+                                        >Use Lab</Button>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Conducted By: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Creation Date: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
+                                        </div>
+                                    </div>
                                 )
                             },
                             {
                                 tabName: "Java",
                                 tabIcon: Code,
                                 tabContent: (
-                                    <Button
-                                        color="info"
-                                        target="_blank"
-                                        round
-                                    >Use Lab</Button>
+                                    <div>
+                                        <Button
+                                            color="info"
+                                            target="_blank"
+                                            round
+                                        >Use Lab</Button>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Conducted By: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{javaLabDesc === undefined ? "" : javaLabDesc.faculty.facultyName}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Creation Date: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{javaLabDesc === undefined ? "" : javaLabDesc.creationDate}</p>
+                                        </div>
+                                    </div>
                                 )
                             },
                             {
                                 tabName: "Python",
                                 tabIcon: Cloud,
                                 tabContent: (
-                                    <Button
-                                        color="info"
-                                        target="_blank"
-                                        round
-                                    >Use Lab</Button>
+                                    <div>
+                                        <Button
+                                            color="info"
+                                            target="_blank"
+                                            round
+                                        >Use Lab</Button>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Conducted By: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.faculty.facultyName}</p>
+                                        </div>
+                                        <div>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "200%",
+                                                color: "#a38282", padding: "2%"
+                                            }}>Creation Date: </p>
+                                            <p style={{
+                                                display: "inline-block", fontSize: "180%",
+                                                padding: "2%"
+                                            }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.creationDate}</p>
+                                        </div>
+                                    </div>
                                 )
                             }
                         ]}
