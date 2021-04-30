@@ -1,7 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-// import App from "./App";
-// ReactDOM.render(<App/>, document.getElementById('root'));
+import App from "./App";
+
+ReactDOM.render(<App/>, document.getElementById('root'));
+/*
 
 import { createBrowserHistory } from "history";
 import { Router, Route, Switch, Redirect } from "react-router-dom";
@@ -23,4 +25,4 @@ ReactDOM.render(
         </Switch>
     </Router>,
     document.getElementById("root")
-);
+);*/

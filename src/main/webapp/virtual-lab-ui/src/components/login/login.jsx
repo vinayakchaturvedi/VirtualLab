@@ -41,7 +41,7 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/StudentHome',
+                    pathname: '/admin',
                     student: result
                 })
             }
@@ -63,7 +63,7 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/FacultyHome',
+                    pathname: '/admin',
                     faculty: result
                 })
             }

@@ -14,6 +14,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
 
 import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
+import "assets/css/material-dashboard-react.css?v=1.9.0";
 
 import bgImage from "assets/img/iiitb-sidebar2.jpg";
 import logo from "assets/img/reactlogo.png";

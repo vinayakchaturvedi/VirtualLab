@@ -46,7 +46,7 @@ class Register extends React.Component {
                 let student = await response.json();
                 console.log("Successfully registered the student: ", student);
                 this.props.history.push({
-                    pathname: '/StudentHome',
+                    pathname: '/admin',
                     student: student
                 })
             } else {
@@ -73,7 +73,7 @@ class Register extends React.Component {
                 let faculty = await response.json();
                 console.log("Successfully registered the faculty: ", faculty);
                 this.props.history.push({
-                    pathname: '/FacultyHome',
+                    pathname: '/admin',
                     faculty: faculty
                 })
             } else {
