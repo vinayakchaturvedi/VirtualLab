@@ -10,6 +10,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 
 @Component
@@ -85,6 +86,7 @@ public class StudentOperationServiceUtil {
     }
 
     private void storeExecutionToMongoDB(Execution execution) {
+        execution.setTime(LocalDateTime.now());
         commandExecutionService.save(execution);
     }
 
@@ -107,7 +109,7 @@ public class StudentOperationServiceUtil {
 
     private void handleViWrite(String labName, String userName, String commandRequest) {
         String fileName = commandRequest.split(" ")[1];
-        String content = commandRequest.substring(7 + fileName.length() + 1);
+        String content = commandRequest.substring(7 + fileName.length() + 2);
         new FileOperation().writeToFile(fileName, content);
 
         ProcessBuilder processBuilder = new ProcessBuilder();

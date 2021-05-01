@@ -3,6 +3,7 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.service.CommandExecutionService;
 import com.example.virtuallab.service.LabOperationService;
 import com.example.virtuallab.service.StudentOperationService;
 import com.example.virtuallab.service.StudentOperationServiceUtil;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -27,6 +29,8 @@ public class StudentOperationController {
     private StudentOperationServiceUtil studentOperationServiceUtil;
     @Autowired
     private LabOperationService labOperationService;
+    @Autowired
+    private CommandExecutionService commandExecutionService;
 
     /*
     {
@@ -145,9 +149,9 @@ public class StudentOperationController {
     @GetMapping("/getSize/{userName}")
     public ResponseEntity<String> getSizeOfDirectories(@PathVariable String userName) {
         Execution execution = new Execution();
-        int totalSize = 0;
-        String unit = " KB";
-        execution.setCommand("du -sh");
+        long totalSize = 0;
+        String unit = "";
+        execution.setCommand("du -shk");
         execution.setUserName(userName);
         Iterable<Student> all = studentOperationService.findAll();
         final Student[] response = {null};
@@ -159,9 +163,51 @@ public class StudentOperationController {
             execution.setLabName(labs.getLabName());
             execution = studentOperationServiceUtil.executeCommand(execution);
             String size = execution.getResult().split("\t")[0];
-            totalSize += Integer.parseInt(size.substring(0, size.length() - 1));
+            totalSize += Long.parseLong(size);
         }
+        if (totalSize < 1024) {
+            unit = " KB";
+        } else if (totalSize < 1048576) {
+            totalSize /= 1024;
+            unit = " MB";
+        } else {
+            totalSize /= 1048576;
+            unit = " GB";
+        }
+
         LOGGER.info("Total size used by " + userName + " is " + totalSize + unit);
+        return new ResponseEntity<>(totalSize + unit, HttpStatus.OK);
+    }
+
+    @GetMapping("/getTotalSize/")
+    public ResponseEntity<String> getTotalSizeOfDirectories() {
+        Execution execution = new Execution();
+        long totalSize = 0;
+        String unit = "";
+        execution.setCommand("du -shk");
+        execution.setUserName("");
+        List<Lab> labs = new ArrayList<>();
+        labOperationService.findAll().forEach(lab -> {
+            labs.add(lab);
+        });
+        for (Lab lab : labs) {
+            execution.setLabName(lab.getLabName());
+            execution = studentOperationServiceUtil.executeCommand(execution);
+            String size = execution.getResult().split("\t")[0];
+            totalSize += Long.parseLong(size);
+        }
+        if (totalSize < 1024) {
+            unit = " KB";
+        } else if (totalSize < 1048576) {
+            totalSize /= 1024;
+            unit = " MB";
+        } else {
+            totalSize /= 1048576;
+            unit = " GB";
+        }
+
+
+        LOGGER.info("Total size used by all the students is " + totalSize + unit);
         return new ResponseEntity<>(totalSize + unit, HttpStatus.OK);
     }
 
@@ -174,5 +220,18 @@ public class StudentOperationController {
                 response[0] = student.shallowCopy(true);
         });
         return new ResponseEntity<>(String.valueOf(response[0].getLabs().size()), HttpStatus.OK);
+    }
+
+    @GetMapping("/getExecution/{userName}")
+    public ResponseEntity<List<Execution>> getExecution(@PathVariable String userName) {
+        List<Execution> response = new ArrayList<>();
+        List<Execution> all = commandExecutionService.findAll(Sort.by(Sort.Direction.DESC, "time"));
+        for (int i = 0; i < Math.min(5, all.size()); i++) {
+            Execution execution = all.get(i);
+            if (execution.getUserName().equals(userName)) {
+                response.add(execution);
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

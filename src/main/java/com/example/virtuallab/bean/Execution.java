@@ -4,6 +4,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Document
 public class Execution {
@@ -14,17 +15,19 @@ public class Execution {
     private String labName;
     private String command;
     private String result;
+    private LocalDateTime time;
     private boolean successfulExecution;
 
     public Execution() {
     }
 
-    public Execution(ObjectId id, String userName, String labName, String command, String result, boolean successfulExecution) {
+    public Execution(ObjectId id, String userName, String labName, String command, String result, LocalDateTime time, boolean successfulExecution) {
         this.id = id;
         this.userName = userName;
         this.labName = labName;
         this.command = command;
         this.result = result;
+        this.time = time;
         this.successfulExecution = successfulExecution;
     }
 
@@ -76,6 +79,14 @@ public class Execution {
         this.result = result;
     }
 
+    public LocalDateTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalDateTime time) {
+        this.time = time;
+    }
+
     @Override
     public String toString() {
         return "Execution{" +
@@ -84,6 +95,7 @@ public class Execution {
                 ", labName='" + labName + '\'' +
                 ", command='" + command + '\'' +
                 ", result='" + result + '\'' +
+                ", time=" + time +
                 ", successfulExecution=" + successfulExecution +
                 '}';
     }

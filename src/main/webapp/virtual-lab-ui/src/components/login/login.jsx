@@ -63,8 +63,8 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/admin',
-                    faculty: result
+                    pathname: '/facultyDashboard',
+                    state: {faculty: result}
                 })
             }
         } else {

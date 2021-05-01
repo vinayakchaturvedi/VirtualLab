@@ -9,6 +9,7 @@ import Dashboard from "./views/Dashboard/Dashboard";
 import Login from "./components/login/login";
 import About from "./About";
 import Contact from "./Contact";
+import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
 
 class App extends React.Component {
 
@@ -34,6 +35,8 @@ class App extends React.Component {
                         <Route path="/admin" component={Admin}>
                         </Route>
                         <Route path="/dashboard" component={Dashboard}>
+                        </Route>
+                        <Route path="/facultyDashboard" component={FacultyDashboard}>
                         </Route>
                         <Route path="/About" component={About}>
                         </Route>

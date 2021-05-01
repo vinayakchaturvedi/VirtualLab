@@ -1,7 +1,9 @@
 package com.example.virtuallab.controller;
 
+import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
+import com.example.virtuallab.service.CommandExecutionService;
 import com.example.virtuallab.service.FacultyOperationService;
 import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.example.virtuallab.service.LabOperationService;
@@ -24,6 +26,8 @@ public class FacultyOperationController {
     private LabOperationService labOperationService;
     @Autowired
     private FacultyOperationServiceUtil util;
+    @Autowired
+    private CommandExecutionService commandExecutionService;
 
     /*
     {
@@ -140,5 +144,11 @@ public class FacultyOperationController {
         if (response[0] == null)
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(response[0], HttpStatus.OK);
+    }
+
+    @GetMapping("/getExecutionSummary")
+    public ResponseEntity<List<Execution>> getExecutionSummary() {
+        List<Execution> all = commandExecutionService.findAll();
+        return new ResponseEntity<>(all, HttpStatus.OK);
     }
 }

@@ -1,11 +1,11 @@
 import React, {useState} from "react";
+import {Chart} from "react-chartjs-2";
 // react plugin for creating charts
 // import ChartistGraph from "react-chartist";
 // @material-ui/core
 // @material-ui/core components
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
-import Table from "components/Table/Table.js";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
 // import LocalOffer from "@material-ui/icons/LocalOffer";
@@ -14,8 +14,6 @@ import Store from "@material-ui/icons/Store";
 // import AccessTime from "@material-ui/icons/AccessTime";
 // import Accessibility from "@material-ui/icons/Accessibility";
 import BugReport from "@material-ui/icons/BugReport";
-import Code from "@material-ui/icons/Code";
-import Cloud from "@material-ui/icons/Cloud";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
@@ -42,37 +40,31 @@ import Button from "../../components/CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
-import CardBody from "../../components/Card/CardBody";
 
 let ps;
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard({...rest}) {
+export default function FacultyDashboard({...rest}) {
 
+    console.log("rest: ", rest);
     const classes = useStyles();
     const [size, setSize] = useState('');
-    const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);
+    const [numberOfLabs, setNumberOfLabs] = useState('');
 
-    const [cppLabDesc, setCppLabDesc] = useState(undefined);
+    const [c_langLabDesc, setCLangLabDesc] = useState(undefined);
     const [javaLabDesc, setJavaLabDesc] = useState(undefined);
     const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
-    const [student, setStudent] = useState(rest.history.location.state.student)
-    const [allLabs, setAllLabs] = useState({});
-    const [registrationMessage, setRegistrationMessage] = useState("")
-    const [executionSummary, setExecutionSummary] = useState([])
-
-    const [registeredLab, setRegisteredLab] = useState(() => {
-        const tempRegisteredLab = {}
-        student.labs.forEach(lab => {
-            tempRegisteredLab[lab.labName] = lab
-        })
-        return tempRegisteredLab;
-    });
+    const [faculty, setFaculty] = useState(rest.history.location.state.faculty)
+    const [alreadyCreatedLabs, setAlreadyCreatedLabs] = useState({});
+    const [nonCreatedLabs, setNotCreatedLabs] = useState({});
+    const [creationMessage, setCreationMessage] = useState("")
+    const [executionSummary, setExecutionSummary] = useState({})
+    const [labels, setLabels] = useState(["Java", "Python"]);
 
     useState(() => {
         fetch(
-            'http://localhost:8700/getSize/' + student.userName, {
+            'http://localhost:8700/getTotalSize/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -87,7 +79,7 @@ export default function Dashboard({...rest}) {
             .catch(error => console.log(error));
 
         fetch(
-            'http://localhost:8700/getExecution/' + student.userName, {
+            'http://localhost:8700/getExecutionSummary/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -97,20 +89,41 @@ export default function Dashboard({...rest}) {
         )
             .then(res => res.json())
             .then(response => {
-                let executionSummary = []
+                let javaSCount = 0, pythonSCount = 0, cLangSCount = 0;
+                let javaFCount = 0, pythonFCount = 0, cLangFCount = 0
                 response.forEach(execution => {
-                    let currExecutionRow = []
-                    currExecutionRow.push(execution.labName)
-                    currExecutionRow.push(execution.command)
-                    currExecutionRow.push(execution.successfulExecution ? "Successful" : "Failed")
-                    executionSummary.push(currExecutionRow)
+                    if (execution.labName === "java") {
+                        if (execution.successfulExecution) javaSCount++;
+                        else javaFCount++;
+                    } else if (execution.labName === "python") {
+                        if (execution.successfulExecution) pythonSCount++;
+                        else pythonFCount++;
+                    }
+                    if (execution.labName === "c_lang") {
+                        if (execution.successfulExecution) cLangSCount++;
+                        else cLangFCount++;
+                    }
                 })
-                setExecutionSummary(executionSummary)
+                let executionSummaryTemp = {};
+                executionSummaryTemp["java"] = {
+                    SCount: javaSCount,
+                    FCount: javaFCount
+                }
+                executionSummaryTemp["python"] = {
+                    SCount: pythonSCount,
+                    FCount: pythonFCount
+                }
+                executionSummaryTemp["c_lang"] = {
+                    SCount: cLangSCount,
+                    FCount: cLangFCount
+                }
+                setExecutionSummary(executionSummaryTemp)
             })
             .catch(error => console.log(error));
 
+
         fetch(
-            'http://localhost:8700/getStudentById/' + student.studentId, {
+            'http://localhost:8700/getFacultyById/' + faculty.facultyId, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -120,13 +133,7 @@ export default function Dashboard({...rest}) {
         )
             .then(res => res.json())
             .then(response => {
-                setStudent(response)
-                const tempRegisteredLab = {}
-                response.labs.forEach(lab => {
-                    tempRegisteredLab[lab.labName] = lab
-                })
-                setRegisteredLab(tempRegisteredLab)
-                setNumberOfLabs(response.labs.length)
+                setFaculty(response)
             })
             .catch(error => console.log(error));
 
@@ -142,10 +149,12 @@ export default function Dashboard({...rest}) {
             .then(res => res.json())
             .then(response => {
                 let currObj = {};
+                let labelsTemp = [];
                 response.forEach(lab => {
                     currObj[lab.labName] = lab;
                 })
-                setAllLabs(currObj)
+                setAlreadyCreatedLabs(currObj)
+                setNumberOfLabs(response.length)
             })
             .catch(error => console.log(error));
 
@@ -178,7 +187,7 @@ export default function Dashboard({...rest}) {
             })
             .catch(error => console.log(error));
         fetch(
-            'http://localhost:8700/getLabByLabName/cpp/', {
+            'http://localhost:8700/getLabByLabName/c_lang/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -188,7 +197,7 @@ export default function Dashboard({...rest}) {
         )
             .then(res => res.json())
             .then(response => {
-                setCppLabDesc(response)
+                setCLangLabDesc(response)
             })
             .catch(error => console.log(error));
     });
@@ -243,6 +252,100 @@ export default function Dashboard({...rest}) {
         };
     }, [mainPanel]);
 
+    if (document.getElementById("lab_student_count") !== null) {
+        let ctx = document.getElementById("lab_student_count").getContext('2d');
+        let chartColors = ["#0de368", "#45d1e3", "#5d4848"];
+        let currStockActivityChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ["Java", "Python", "C Language"],
+                datasets: [
+                    {
+                        label: "Quantity",
+                        data: [javaLabDesc === undefined ? 0 : javaLabDesc.studentsRegistered,
+                            pythonLabDesc === undefined ? 0 : pythonLabDesc.studentsRegistered,
+                            c_langLabDesc === undefined ? 0 : c_langLabDesc.studentsRegistered],
+                        backgroundColor: chartColors,
+                    }
+                ],
+            },
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: 'rgb(71,37,37)',
+                        fontSize: 15
+                    }
+                },
+                title: {
+                    display: true,
+                    fontColor: 'rgb(71,37,37)',
+                    fontSize: 26,
+                    text: "Lab-Student: BreakUp",
+                },
+
+            }
+        });
+    }
+
+    if (document.getElementById("execution_summary") !== null) {
+        let ctx = document.getElementById("execution_summary").getContext('2d');
+        let currTopStocksOwnedChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [
+                    {
+                        label: "Successful Execution",
+                        data: [executionSummary.java === undefined ? 0 : executionSummary.java.SCount,
+                            executionSummary.python === undefined ? 0 : executionSummary.python.SCount,
+                            executionSummary.c_lang === undefined ? 0 : executionSummary.c_lang.SCount],
+                        backgroundColor: 'rgb(77,240,126)',
+                        barThickness: 80
+                    },
+                    {
+                        label: "Failed Execution",
+                        data: [executionSummary.java === undefined ? 0 : executionSummary.java.FCount,
+                            executionSummary.python === undefined ? 0 : executionSummary.python.FCount,
+                            executionSummary.c_lang === undefined ? 0 : executionSummary.c_lang.FCount],
+                        backgroundColor: 'rgb(226,23,44)',
+                        barThickness: 80
+                    }
+                ],
+            },
+            options: {
+                legend: {
+                    labels: {
+                        fontColor: 'rgb(71,37,37)',
+                        fontSize: 15
+                    }
+                },
+                title: {
+                    display: true,
+                    fontColor: 'rgb(71,37,37)',
+                    fontSize: 26,
+                    text: "Execution Summary",
+                },
+
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            fontColor: 'rgb(71,37,37)',
+                            fontSize: 16,
+                            beginAtZero: true
+                        },
+                    }],
+                    xAxes: [{
+                        ticks: {
+                            fontColor: 'rgb(71,37,37)',
+                            fontSize: 16,
+                        },
+                    }]
+                }
+
+            }
+        });
+    }
+
     return (
         <div className={classes.wrapper}>
             <Sidebar
@@ -256,8 +359,20 @@ export default function Dashboard({...rest}) {
                 {...rest}
             />
             <div className={classes.mainPanel} ref={mainPanel}>
-                <h2 style={{margin: "1%"}}>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span>
+                <h2 style={{margin: "1%"}}>Welcome back! <span style={{color: "#302c8c"}}>{faculty.facultyName}</span>
                 </h2>
+                <div>
+                    <div style={{width: "50%", height: "50%", display: "inline-block"}}>
+                        <canvas
+                            id={"lab_student_count"}
+                        />
+                    </div>
+                    <div style={{width: "50%", height: "50%", display: "inline-block"}}>
+                        <canvas
+                            id={"execution_summary"}
+                        />
+                    </div>
+                </div>
                 <div className={classes.map}>
                     <div style={{marginTop: "3%"}}>
                         <GridContainer>
@@ -280,7 +395,7 @@ export default function Dashboard({...rest}) {
                                         <CardIcon color="success">
                                             <Store/>
                                         </CardIcon>
-                                        <p className={classes.cardCategory}>Registered Labs</p>
+                                        <p className={classes.cardCategory}>Created Labs</p>
                                         <h3 className={classes.cardTitle}>{numberOfLabs}</h3>
                                     </CardHeader>
                                 </Card>
@@ -292,57 +407,44 @@ export default function Dashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: true,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: registeredLab.c_lang === undefined ? "none" : "block"}}>
-                                                        <Button
-                                                            color="info"
-                                                            target="_blank"
-                                                            round
-                                                            onClick={() => {
-                                                                rest.history.push({
-                                                                    pathname: '/StudentTerminal',
-                                                                    student: student,
-                                                                    lab: registeredLab.c_lang
-                                                                })
-                                                            }}
-                                                        >Use Lab</Button>
-                                                    </div>
-                                                    <div
-                                                        style={{display: registeredLab.c_lang !== undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.c_lang !== undefined ? "none" : "block"}}>
                                                         <Button
                                                             color="info"
                                                             target="_blank"
                                                             round
                                                             onClick={() => {
                                                                 fetch(
-                                                                    'http://localhost:8700/labRegistration/', {
+                                                                    'http://localhost:8700/addLab/', {
                                                                         method: 'POST',
                                                                         headers: {
                                                                             'Content-Type': 'application/json;charset=utf-8',
                                                                             'Accept': '*/*'
                                                                         },
                                                                         body: JSON.stringify({
-                                                                            studentId: student.studentId,
-                                                                            labId: allLabs["c_lang"].labId
+                                                                            labName: "c_lang",
+                                                                            studentsRegistered: 0,
+                                                                            facultyId: faculty.facultyId
                                                                         })
                                                                     }
                                                                 )
-                                                                    .then(res => res.text())
+                                                                    .then(res => res.json())
                                                                     .then(response => {
-                                                                        setRegistrationMessage(response)
-                                                                        console.log("RegistrationMessage: ", registrationMessage)
+                                                                        console.log("Lab creation response:", response)
+                                                                        setCLangLabDesc(response)
+                                                                        setCreationMessage("Successfully created the lab")
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
-                                                        >Register</Button>
-                                                        <h4>{registrationMessage}</h4>
+                                                        >Create Lab</Button>
+                                                        <h4>{creationMessage}</h4>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.c_lang === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -350,10 +452,10 @@ export default function Dashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.faculty.facultyName}</p>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.c_lang === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -361,64 +463,62 @@ export default function Dashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.creationDate}</p>
+                                                    </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.c_lang === undefined ? "none" : "block"}}>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Total Registered Students: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.studentsRegistered}</p>
                                                     </div>
                                                 </div>
                                             )
                                         },
                                         {
                                             tabName: "Java",
-                                            display: javaLabDesc !== undefined,
-                                            tabIcon: Code,
+                                            display: true,
+                                            tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: registeredLab.java === undefined ? "none" : "block"}}>
-                                                        <Button
-                                                            color="info"
-                                                            target="_blank"
-                                                            round
-                                                            onClick={() => {
-                                                                rest.history.push({
-                                                                    pathname: '/StudentTerminal',
-                                                                    student: student,
-                                                                    lab: registeredLab.java
-                                                                })
-                                                            }}
-                                                        >Use Lab</Button>
-                                                    </div>
-                                                    <div
-                                                        style={{display: registeredLab.java !== undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.java !== undefined ? "none" : "block"}}>
                                                         <Button
                                                             color="info"
                                                             target="_blank"
                                                             round
                                                             onClick={() => {
                                                                 fetch(
-                                                                    'http://localhost:8700/labRegistration/', {
+                                                                    'http://localhost:8700/addLab/', {
                                                                         method: 'POST',
                                                                         headers: {
                                                                             'Content-Type': 'application/json;charset=utf-8',
                                                                             'Accept': '*/*'
                                                                         },
                                                                         body: JSON.stringify({
-                                                                            studentId: student.studentId,
-                                                                            labId: allLabs["java"].labId
+                                                                            labName: "java",
+                                                                            studentsRegistered: 0,
+                                                                            facultyId: faculty.facultyId
                                                                         })
                                                                     }
                                                                 )
-                                                                    .then(res => res.text())
+                                                                    .then(res => res.json())
                                                                     .then(response => {
-                                                                        setRegistrationMessage(response)
-                                                                        console.log("RegistrationMessage: ", response)
+                                                                        console.log("Lab creation response:", response)
+                                                                        setJavaLabDesc(response)
+                                                                        setCreationMessage("Successfully created the lab")
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
-                                                        >Register</Button>
-                                                        <h4>{registrationMessage}</h4>
+                                                        >Create Lab</Button>
+                                                        <h4>{creationMessage}</h4>
                                                     </div>
                                                     <div
-                                                        style={{display: javaLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.java === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -429,7 +529,7 @@ export default function Dashboard({...rest}) {
                                                         }}>{javaLabDesc === undefined ? "" : javaLabDesc.faculty.facultyName}</p>
                                                     </div>
                                                     <div
-                                                        style={{display: javaLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.java === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -439,62 +539,60 @@ export default function Dashboard({...rest}) {
                                                             padding: "2%"
                                                         }}>{javaLabDesc === undefined ? "" : javaLabDesc.creationDate}</p>
                                                     </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.java === undefined ? "none" : "block"}}>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Total Registered Students: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{javaLabDesc === undefined ? "" : javaLabDesc.studentsRegistered}</p>
+                                                    </div>
                                                 </div>
                                             )
                                         },
                                         {
                                             tabName: "Python",
-                                            display: pythonLabDesc !== undefined,
-                                            tabIcon: Cloud,
+                                            display: true,
+                                            tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: registeredLab.python === undefined ? "none" : "block"}}>
-                                                        <Button
-                                                            color="info"
-                                                            target="_blank"
-                                                            round
-                                                            onClick={() => {
-                                                                rest.history.push({
-                                                                    pathname: '/StudentTerminal',
-                                                                    student: student,
-                                                                    lab: registeredLab.python
-                                                                })
-                                                            }}
-                                                        >Use Lab</Button>
-                                                    </div>
-                                                    <div
-                                                        style={{display: registeredLab.python !== undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.python !== undefined ? "none" : "block"}}>
                                                         <Button
                                                             color="info"
                                                             target="_blank"
                                                             round
                                                             onClick={() => {
                                                                 fetch(
-                                                                    'http://localhost:8700/labRegistration/', {
+                                                                    'http://localhost:8700/addLab/', {
                                                                         method: 'POST',
                                                                         headers: {
                                                                             'Content-Type': 'application/json;charset=utf-8',
                                                                             'Accept': '*/*'
                                                                         },
                                                                         body: JSON.stringify({
-                                                                            studentId: student.studentId,
-                                                                            labId: allLabs["python"].labId
+                                                                            labName: "python",
+                                                                            studentsRegistered: 0,
+                                                                            facultyId: faculty.facultyId
                                                                         })
                                                                     }
                                                                 )
-                                                                    .then(res => res.text())
+                                                                    .then(res => res.json())
                                                                     .then(response => {
-                                                                        setRegistrationMessage(response)
-                                                                        console.log("RegistrationMessage: ", response)
+                                                                        console.log("Lab creation response:", response)
+                                                                        setPythonLabDesc(response)
+                                                                        setCreationMessage("Successfully created the lab")
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
-                                                        >Register</Button>
-                                                        <h4>{registrationMessage}</h4>
+                                                        >Create Lab</Button>
+                                                        <h4>{creationMessage}</h4>
                                                     </div>
                                                     <div
-                                                        style={{display: pythonLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.python === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -505,7 +603,7 @@ export default function Dashboard({...rest}) {
                                                         }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.faculty.facultyName}</p>
                                                     </div>
                                                     <div
-                                                        style={{display: pythonLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: alreadyCreatedLabs.python === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -515,27 +613,22 @@ export default function Dashboard({...rest}) {
                                                             padding: "2%"
                                                         }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.creationDate}</p>
                                                     </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.python === undefined ? "none" : "block"}}>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "200%",
+                                                            color: "#a38282", padding: "2%"
+                                                        }}>Total Registered Students: </p>
+                                                        <p style={{
+                                                            display: "inline-block", fontSize: "180%",
+                                                            padding: "2%"
+                                                        }}>{pythonLabDesc === undefined ? "" : pythonLabDesc.studentsRegistered}</p>
+                                                    </div>
                                                 </div>
                                             )
-                                        }
+                                        },
                                     ]}
                                 />
-                            </GridItem>
-                        </GridContainer>
-                        <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Card>
-                                    <CardHeader color="warning">
-                                        <h4 className={classes.cardTitleWhite}>Previous Executions</h4>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Table
-                                            tableHeaderColor="warning"
-                                            tableHead={["Lab Name", "Command", "Execution Result"]}
-                                            tableData={executionSummary}
-                                        />
-                                    </CardBody>
-                                </Card>
                             </GridItem>
                         </GridContainer>
                     </div>
