@@ -21,20 +21,28 @@ import Typography from "views/Typography/Typography.js";
   
 const dashboardRoutes = [
   {
-    path: "/dashboard",
-    name: "Dashboard",
+    path: "/",
+    name: "About",
     rtlName: "Demo",
-    icon: Dashboard,
+    icon: LibraryBooks,
     component: DashboardPage,
-    layout: "/admin"
+    layout: "/About"
   },
   {
-    path: "/user",
-    name: "User Profile",
+    path: "/",
+    name: "Contact",
+    rtlName: "Demo",
+    icon: LibraryBooks,
+    component: DashboardPage,
+    layout: "/Contact"
+  },
+  {
+    path: "/",
+    name: "Logout",
     rtlName: "Demo",
     icon: Person,
     component: UserProfile,
-    layout: "/admin"
+    layout: "/IndexPanel"
   },
 ];
 

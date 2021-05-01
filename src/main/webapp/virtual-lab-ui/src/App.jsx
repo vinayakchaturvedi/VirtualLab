@@ -7,6 +7,8 @@ import Admin from "./layouts/Admin";
 import RTL from "./layouts/RTL";
 import Dashboard from "./views/Dashboard/Dashboard";
 import Login from "./components/login/login";
+import About from "./About";
+import Contact from "./Contact";
 
 class App extends React.Component {
 
@@ -21,6 +23,8 @@ class App extends React.Component {
                     <Switch>
                         <Route exact path="/" component={IndexPanel}>
                         </Route>
+                        <Route exact path="/IndexPanel" component={IndexPanel}>
+                        </Route>
                         <Route path="/StudentTerminal" component={StudentTerminal}>
                         </Route>
                         <Route path="/rtl" component={RTL}>
@@ -30,6 +34,10 @@ class App extends React.Component {
                         <Route path="/admin" component={Admin}>
                         </Route>
                         <Route path="/dashboard" component={Dashboard}>
+                        </Route>
+                        <Route path="/About" component={About}>
+                        </Route>
+                        <Route path="/Contact" component={Contact}>
                         </Route>
                     </Switch>
                 </Router>

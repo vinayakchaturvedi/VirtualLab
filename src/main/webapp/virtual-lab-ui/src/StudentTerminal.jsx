@@ -15,6 +15,9 @@ class StudentTerminal extends Component {
             showTextBox: false,
             textBoxContent: ""
         }
+
+        console.log("Student: ", this.props.location.student)
+        console.log("lab: ", this.props.location.lab)
         this.execCommandOnServer = this.execCommandOnServer.bind(this)
         this.logout = this.logout.bind(this);
         this.handleChange = this.handleChange.bind(this)
@@ -162,9 +165,12 @@ class StudentTerminal extends Component {
                         </label>
                         <label className="logo">Virtual Lab</label>
                         <ul>
-                            <li><Link to="/">About</Link></li>
-                            <li><Link to="/">Services</Link></li>
-                            <li><Link to="/">Contact</Link></li>
+                            <li><Link to={{
+                                pathname: '/dashboard',
+                                state: {student: this.state.student}
+                            }}>Home</Link></li>
+                            <li><Link to="/About">About</Link></li>
+                            <li><Link to="/Contact">Contact</Link></li>
                             <li><Link to="/" onClick={this.logout}>Logout</Link></li>
                         </ul>
                     </nav>
@@ -175,7 +181,7 @@ class StudentTerminal extends Component {
                         width: "100%",
                         justifyContent: "center",
                         alignItems: "center",
-                        height: "80vh"
+                        height: "100vh"
                     }}
                 >
                     <textarea
@@ -193,7 +199,7 @@ class StudentTerminal extends Component {
                         width: "100%",
                         justifyContent: "center",
                         alignItems: "center",
-                        height: "80vh"
+                        height: "100vh"
                     }}
                 >
                     <Terminal

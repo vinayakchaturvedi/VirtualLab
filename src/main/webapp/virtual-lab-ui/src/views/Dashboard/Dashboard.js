@@ -57,6 +57,8 @@ export default function Dashboard({...rest}) {
     const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
     const [student, setStudent] = useState(rest.history.location.state.student)
     const [allLabs, setAllLabs] = useState({});
+    const [registrationMessage, setRegistrationMessage] = useState("")
+
     const [registeredLab, setRegisteredLab] = useState(() => {
         const tempRegisteredLab = {}
         student.labs.forEach(lab => {
@@ -196,13 +198,6 @@ export default function Dashboard({...rest}) {
         };
     }, [mainPanel]);
 
-
-    const labItem = [];
-
-    for (let allLabsKey in allLabs) {
-
-    }
-
     return (
         <div className={classes.wrapper}>
             <Sidebar
@@ -216,7 +211,8 @@ export default function Dashboard({...rest}) {
                 {...rest}
             />
             <div className={classes.mainPanel} ref={mainPanel}>
-                <h2>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span></h2>
+                <h2 style={{margin: "1%"}}>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span>
+                </h2>
                 <div className={classes.map}>
                     <div style={{marginTop: "3%"}}>
                         <GridContainer>
@@ -261,6 +257,13 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                rest.history.push({
+                                                                    pathname: '/StudentTerminal',
+                                                                    student: student,
+                                                                    lab: registeredLab.c_lang
+                                                                })
+                                                            }}
                                                         >Use Lab</Button>
                                                     </div>
                                                     <div
@@ -269,7 +272,28 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                fetch(
+                                                                    'http://localhost:8700/labRegistration/', {
+                                                                        method: 'POST',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json;charset=utf-8',
+                                                                            'Accept': '*/*'
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            studentId: student.studentId,
+                                                                            labId: allLabs["c_lang"].labId
+                                                                        })
+                                                                    }
+                                                                )
+                                                                    .then(res => res.text())
+                                                                    .then(response => {
+                                                                        setRegistrationMessage(response)
+                                                                    })
+                                                                    .catch(error => console.log(error));
+                                                            }}
                                                         >Register</Button>
+                                                        <h4>{registrationMessage}</h4>
                                                     </div>
                                                     <div>
                                                         <p style={{
@@ -306,6 +330,13 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                rest.history.push({
+                                                                    pathname: '/StudentTerminal',
+                                                                    student: student,
+                                                                    lab: registeredLab.java
+                                                                })
+                                                            }}
                                                         >Use Lab</Button>
                                                     </div>
                                                     <div
@@ -314,6 +345,26 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                fetch(
+                                                                    'http://localhost:8700/labRegistration/', {
+                                                                        method: 'POST',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json;charset=utf-8',
+                                                                            'Accept': '*/*'
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            studentId: student.studentId,
+                                                                            labId: allLabs["java"].labId
+                                                                        })
+                                                                    }
+                                                                )
+                                                                    .then(res => res.text())
+                                                                    .then(response => {
+                                                                        setRegistrationMessage(response)
+                                                                    })
+                                                                    .catch(error => console.log(error));
+                                                            }}
                                                         >Register</Button>
                                                     </div>
                                                     <div>
@@ -351,6 +402,13 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                rest.history.push({
+                                                                    pathname: '/StudentTerminal',
+                                                                    student: student,
+                                                                    lab: registeredLab.python
+                                                                })
+                                                            }}
                                                         >Use Lab</Button>
                                                     </div>
                                                     <div
@@ -359,6 +417,26 @@ export default function Dashboard({...rest}) {
                                                             color="info"
                                                             target="_blank"
                                                             round
+                                                            onClick={() => {
+                                                                fetch(
+                                                                    'http://localhost:8700/labRegistration/', {
+                                                                        method: 'POST',
+                                                                        headers: {
+                                                                            'Content-Type': 'application/json;charset=utf-8',
+                                                                            'Accept': '*/*'
+                                                                        },
+                                                                        body: JSON.stringify({
+                                                                            studentId: student.studentId,
+                                                                            labId: allLabs["python"].labId
+                                                                        })
+                                                                    }
+                                                                )
+                                                                    .then(res => res.text())
+                                                                    .then(response => {
+                                                                        setRegistrationMessage(response)
+                                                                    })
+                                                                    .catch(error => console.log(error));
+                                                            }}
                                                         >Register</Button>
                                                     </div>
                                                     <div>
