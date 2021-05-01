@@ -1,6 +1,5 @@
 package com.example.virtuallab.controller;
 
-import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.dao.StudentOperationDAO;
 import org.junit.Before;
@@ -17,7 +16,6 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
