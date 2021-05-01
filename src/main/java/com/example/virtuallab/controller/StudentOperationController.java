@@ -3,13 +3,15 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
-import com.example.virtuallab.service.LabOperationService;
-import com.example.virtuallab.service.StudentOperationService;
+import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.LabOperationDAO;
+import com.example.virtuallab.dao.StudentOperationDAO;
 import com.example.virtuallab.service.StudentOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,11 +24,13 @@ public class StudentOperationController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentOperationController.class);
     @Autowired
-    private StudentOperationService studentOperationService;
+    private StudentOperationDAO studentOperationDAO;
     @Autowired
     private StudentOperationServiceUtil studentOperationServiceUtil;
     @Autowired
-    private LabOperationService labOperationService;
+    private LabOperationDAO labOperationDAO;
+    @Autowired
+    private CommandExecutionDAO commandExecutionDAO;
 
     /*
     {
@@ -38,7 +42,7 @@ public class StudentOperationController {
      */
     @PostMapping("/addStudent")
     public ResponseEntity<Student> addStudent(@RequestBody Student student) {
-        Student response = studentOperationService.save(student);
+        Student response = studentOperationDAO.save(student);
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
@@ -50,7 +54,7 @@ public class StudentOperationController {
      */
     @PostMapping("/verifyStudentLogin")
     public ResponseEntity<Student> verifyStudentLogin(@RequestBody Student request) {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(request.getUserName()) &&
@@ -64,7 +68,7 @@ public class StudentOperationController {
 
     @GetMapping("/findAllStudents")
     public ResponseEntity<List<Student>> getAllStudents() {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         List<Student> studentList = new ArrayList<>();
         all.forEach(student -> {
             studentList.add(student.shallowCopy(true));
@@ -74,7 +78,7 @@ public class StudentOperationController {
 
     @GetMapping("/getStudentByUserName/{userName}")
     public ResponseEntity<Student> getStudentByUserName(@PathVariable String userName) {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(userName))
@@ -87,23 +91,23 @@ public class StudentOperationController {
 
     @GetMapping("/getStudentById/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable int id) {
-        Optional<Student> student = studentOperationService.findById(id);
+        Optional<Student> student = studentOperationDAO.findById(id);
         return student.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteStudent/{id}")
     public ResponseEntity<String> deleteStudentId(@PathVariable int id) {
-        studentOperationService.deleteById(id);
+        studentOperationDAO.deleteById(id);
         String message = "Student with id: " + id + " removed successfully";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @GetMapping("/getNotRegisteredLabs/{id}")
     public ResponseEntity<List<Lab>> getNotRegisteredLabs(@PathVariable int id) {
-        Optional<Student> student = studentOperationService.findById(id);
+        Optional<Student> student = studentOperationDAO.findById(id);
         Set<String> alreadyRegisteredLabs = new HashSet<>();
         student.get().getLabs().forEach(lab -> alreadyRegisteredLabs.add(lab.getLabName()));
-        Iterable<Lab> allLabs = labOperationService.findAll();
+        Iterable<Lab> allLabs = labOperationDAO.findAll();
         List<Lab> notRegisteredLabs = new ArrayList<>();
         allLabs.forEach(lab -> {
             if (!alreadyRegisteredLabs.contains(lab.getLabName())) {
@@ -130,7 +134,8 @@ public class StudentOperationController {
         }
         message = "Successfully registered the StudentId " +
                 jsonNode.get("studentId") + " for the lab " + response.getLabName();
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        LOGGER.info(message);
+        return new ResponseEntity<>("Registration Successful", HttpStatus.OK);
     }
 
     @PostMapping(value = "/execCommand", produces = {"application/json"})
@@ -139,5 +144,94 @@ public class StudentOperationController {
         execution = studentOperationServiceUtil.executeCommand(execution);
         LOGGER.info("Command Execution response: " + execution);
         return new ResponseEntity<>(execution, HttpStatus.OK);
+    }
+
+    @GetMapping("/getSize/{userName}")
+    public ResponseEntity<String> getSizeOfDirectories(@PathVariable String userName) {
+        Execution execution = new Execution();
+        long totalSize = 0;
+        String unit = "";
+        execution.setCommand("du -shk");
+        execution.setUserName(userName);
+        Iterable<Student> all = studentOperationDAO.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student.shallowCopy(true);
+        });
+        for (Lab labs : response[0].getLabs()) {
+            execution.setLabName(labs.getLabName());
+            execution = studentOperationServiceUtil.executeCommand(execution);
+            String size = execution.getResult().split("\t")[0];
+            totalSize += Long.parseLong(size);
+        }
+        if (totalSize < 1024) {
+            unit = " KB";
+        } else if (totalSize < 1048576) {
+            totalSize /= 1024;
+            unit = " MB";
+        } else {
+            totalSize /= 1048576;
+            unit = " GB";
+        }
+
+        LOGGER.info("Total size used by " + userName + " is " + totalSize + unit);
+        return new ResponseEntity<>(totalSize + unit, HttpStatus.OK);
+    }
+
+    @GetMapping("/getTotalSize/")
+    public ResponseEntity<String> getTotalSizeOfDirectories() {
+        Execution execution = new Execution();
+        long totalSize = 0;
+        String unit = "";
+        execution.setCommand("du -shk");
+        execution.setUserName("");
+        List<Lab> labs = new ArrayList<>();
+        labOperationDAO.findAll().forEach(lab -> {
+            labs.add(lab);
+        });
+        for (Lab lab : labs) {
+            execution.setLabName(lab.getLabName());
+            execution = studentOperationServiceUtil.executeCommand(execution);
+            String size = execution.getResult().split("\t")[0];
+            totalSize += Long.parseLong(size);
+        }
+        if (totalSize < 1024) {
+            unit = " KB";
+        } else if (totalSize < 1048576) {
+            totalSize /= 1024;
+            unit = " MB";
+        } else {
+            totalSize /= 1048576;
+            unit = " GB";
+        }
+
+
+        LOGGER.info("Total size used by all the students is " + totalSize + unit);
+        return new ResponseEntity<>(totalSize + unit, HttpStatus.OK);
+    }
+
+    @GetMapping("/getNumberOfLabs/{userName}")
+    public ResponseEntity<String> getNumberOfLabs(@PathVariable String userName) {
+        Iterable<Student> all = studentOperationDAO.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student.shallowCopy(true);
+        });
+        return new ResponseEntity<>(String.valueOf(response[0].getLabs().size()), HttpStatus.OK);
+    }
+
+    @GetMapping("/getExecution/{userName}")
+    public ResponseEntity<List<Execution>> getExecution(@PathVariable String userName) {
+        List<Execution> response = new ArrayList<>();
+        List<Execution> all = commandExecutionDAO.findAll(Sort.by(Sort.Direction.DESC, "time"));
+        for (int i = 0; i < Math.min(5, all.size()); i++) {
+            Execution execution = all.get(i);
+            if (execution.getUserName().equals(userName)) {
+                response.add(execution);
+            }
+        }
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -1,8 +1,8 @@
 import React from "react";
-// import loginImg from "../../login.svg";
+// import loginImg from "../../loginHook.svg";
 import imglog from "../../llo.png";
 import "./style.scss";
-import { withRouter } from 'react-router-dom';
+import {withRouter} from 'react-router-dom';
 
 // import { Redirect } from "react-router-dom";
 
@@ -24,7 +24,7 @@ class Login extends React.Component {
     async verifyUser() {
         if (document.getElementById("studentLogin").checked === true) {
             console.log("Verifying student");
-            //API Call to get student ID for login verification
+            //API Call to get student ID for loginHook verification
             let response = await fetch('http://localhost:8700/verifyStudentLogin/', {
                 method: 'POST',
                 headers: {
@@ -41,13 +41,13 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/StudentHome',
-                    student: result
+                    pathname: '/dashboard',
+                    state: {student: result}
                 })
             }
         } else if (document.getElementById("facultyLogin").checked === true) {
             console.log("Verifying faculty");
-            //API Call to get faculty ID for login verification
+            //API Call to get faculty ID for loginHook verification
             let response = await fetch('http://localhost:8700/verifyFacultyLogin/', {
                 method: 'POST',
                 headers: {
@@ -63,8 +63,8 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/FacultyHome',
-                    faculty: result
+                    pathname: '/facultyDashboard',
+                    state: {faculty: result}
                 })
             }
         } else {

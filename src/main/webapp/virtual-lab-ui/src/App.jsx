@@ -2,11 +2,17 @@ import React from "react";
 import "./App.scss";
 import IndexPanel from "./IndexPanel";
 import StudentTerminal from "./StudentTerminal.jsx";
-import {BrowserRouter as Router, Link, NavLink, Route} from "react-router-dom";
-import FacultyHome from "./components/FacultyHome";
-import StudentHome from "./components/StudentHome";
+import {BrowserRouter as Router, Link, NavLink, Route, Switch} from "react-router-dom";
+import Admin from "./layouts/Admin";
+import RTL from "./layouts/RTL";
+import Dashboard from "./views/Dashboard/Dashboard";
+import Login from "./components/login/login";
+import About from "./About";
+import Contact from "./Contact";
+import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
 
 class App extends React.Component {
+
     render() {
         return (
             <div>
@@ -15,14 +21,28 @@ class App extends React.Component {
                         <Link to="/"/>
                         <NavLink activeClassName="active" to="/terminal"/>
                     </div>
-                    <Route exact path="/" component={IndexPanel}>
-                    </Route>
-                    <Route exact path="/StudentTerminal" component={StudentTerminal}>
-                    </Route>
-                    <Route exact path='/FacultyHome' component={FacultyHome}>
-                    </Route>
-                    <Route exact path='/StudentHome' component={StudentHome}>
-                    </Route>
+                    <Switch>
+                        <Route exact path="/" component={IndexPanel}>
+                        </Route>
+                        <Route exact path="/IndexPanel" component={IndexPanel}>
+                        </Route>
+                        <Route path="/StudentTerminal" component={StudentTerminal}>
+                        </Route>
+                        <Route path="/rtl" component={RTL}>
+                        </Route>
+                        <Route path="/login" component={Login}>
+                        </Route>
+                        <Route path="/admin" component={Admin}>
+                        </Route>
+                        <Route path="/dashboard" component={Dashboard}>
+                        </Route>
+                        <Route path="/facultyDashboard" component={FacultyDashboard}>
+                        </Route>
+                        <Route path="/About" component={About}>
+                        </Route>
+                        <Route path="/Contact" component={Contact}>
+                        </Route>
+                    </Switch>
                 </Router>
             </div>
         )

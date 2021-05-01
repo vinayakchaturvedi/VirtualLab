@@ -271,6 +271,11 @@ body {
   outline: none;
 }
 
+.StudentTerminal {
+  background-color: #254753;
+  background-size: cover;
+  height: calc(100vh - 0px);
+}
 
 nav {
   height: 80px;
@@ -338,6 +343,60 @@ a:hover {
 
 #check {
   display: none;
+}
+
+.AboutContact body {
+  background: url("background2.png") no-repeat fixed;
+  background-size: cover;
+  height: calc(100vh - 0px);
+}
+
+.About {
+  margin-top: 3%;
+}
+
+.About .container {
+  margin-top: 2%;
+  display: grid;
+  grid-gap: 1rem;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 100%;
+}
+
+.About .item {
+  margin: 3px;
+  padding: 34px;
+}
+
+.About h1 {
+  text-align: center;
+  color: #123342;
+}
+
+.About h2 {
+  text-align: center;
+  color: #0c0c0c;
+  border-bottom: dotted;
+  font-size: 180%;
+}
+
+.About p {
+  text-align: center;
+  color: #0c0c0c;
+  font-size: 150%;
+}
+
+.About img {
+  border-radius: 4px;
+  padding: 5px;
+  width: 50px;
+  align-content: center;
+}
+
+.About .contact {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 @media (max-width: 858px) {

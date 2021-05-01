@@ -1,5 +1,5 @@
 import React from "react";
-// import loginImg from "../../login.svg";
+// import loginImg from "../../loginHook.svg";
 import imglog from "../../llo.png";
 import "./style.scss";
 import {withRouter} from "react-router-dom";
@@ -46,8 +46,8 @@ class Register extends React.Component {
                 let student = await response.json();
                 console.log("Successfully registered the student: ", student);
                 this.props.history.push({
-                    pathname: '/StudentHome',
-                    student: student
+                    pathname: '/dashboard',
+                    state: {student: student}
                 })
             } else {
                 console.log("Error while registering the student");
@@ -73,8 +73,8 @@ class Register extends React.Component {
                 let faculty = await response.json();
                 console.log("Successfully registered the faculty: ", faculty);
                 this.props.history.push({
-                    pathname: '/FacultyHome',
-                    faculty: faculty
+                    pathname: '/facultyDashboard',
+                    state: {faculty: faculty}
                 })
             } else {
                 console.log("Error while registering the faculty");
