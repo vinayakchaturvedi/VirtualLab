@@ -26,6 +26,7 @@ public class ExecuteLinuxProcess {
             LOGGER.info("Ansible output: " + result);
         } catch (Exception e) {
             LOGGER.error(e.getLocalizedMessage());
+            return e.getLocalizedMessage();
         }
         return result.toString();
     }

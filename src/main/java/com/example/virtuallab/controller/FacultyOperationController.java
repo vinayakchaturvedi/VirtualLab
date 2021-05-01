@@ -3,10 +3,10 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
-import com.example.virtuallab.service.CommandExecutionService;
-import com.example.virtuallab.service.FacultyOperationService;
+import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.FacultyOperationDAO;
 import com.example.virtuallab.service.FacultyOperationServiceUtil;
-import com.example.virtuallab.service.LabOperationService;
+import com.example.virtuallab.dao.LabOperationDAO;
 import com.example.virtuallab.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,13 +21,13 @@ import java.util.*;
 public class FacultyOperationController {
 
     @Autowired
-    private FacultyOperationService facultyOperationService;
+    private FacultyOperationDAO facultyOperationDAO;
     @Autowired
-    private LabOperationService labOperationService;
+    private LabOperationDAO labOperationDAO;
     @Autowired
     private FacultyOperationServiceUtil util;
     @Autowired
-    private CommandExecutionService commandExecutionService;
+    private CommandExecutionDAO commandExecutionDAO;
 
     /*
     {
@@ -39,7 +39,7 @@ public class FacultyOperationController {
      */
     @PostMapping("/addFaculty")
     public ResponseEntity<Faculty> addFaculty(@RequestBody Faculty faculty) {
-        Faculty response = facultyOperationService.save(faculty);
+        Faculty response = facultyOperationDAO.save(faculty);
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
@@ -51,7 +51,7 @@ public class FacultyOperationController {
      */
     @PostMapping("/verifyFacultyLogin")
     public ResponseEntity<Faculty> verifyFacultyLogin(@RequestBody Faculty request) {
-        Iterable<Faculty> all = facultyOperationService.findAll();
+        Iterable<Faculty> all = facultyOperationDAO.findAll();
         final Faculty[] response = {null};
         all.forEach(faculty -> {
             if (faculty.getUserName().equals(request.getUserName()) &&
@@ -65,7 +65,7 @@ public class FacultyOperationController {
 
     @GetMapping("/findAllFaculties")
     public ResponseEntity<List<Faculty>> getAllFaculty() {
-        Iterable<Faculty> all = facultyOperationService.findAll();
+        Iterable<Faculty> all = facultyOperationDAO.findAll();
         List<Faculty> facultyList = new ArrayList<>();
         all.forEach(faculty -> {
             facultyList.add(faculty.shallowCopy(true));
@@ -75,13 +75,13 @@ public class FacultyOperationController {
 
     @GetMapping("/getFaculty/{id}")
     public ResponseEntity<Faculty> getFacultyById(@PathVariable int id) {
-        Optional<Faculty> faculty = facultyOperationService.findById(id);
+        Optional<Faculty> faculty = facultyOperationDAO.findById(id);
         return faculty.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteFaculty/{id}")
     public ResponseEntity<String> deleteFacultyId(@PathVariable int id) {
-        facultyOperationService.deleteById(id);
+        facultyOperationDAO.deleteById(id);
         String message = "Faculty with id: " + id + " removed successfully";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
@@ -95,7 +95,7 @@ public class FacultyOperationController {
 
     @GetMapping("/findAllLabs")
     public ResponseEntity<List<Lab>> getAllLabs() {
-        Iterable<Lab> all = labOperationService.findAll();
+        Iterable<Lab> all = labOperationDAO.findAll();
         List<Lab> labList = new ArrayList<>();
         all.forEach(lab -> {
             labList.add(lab.shallowCopy(true));
@@ -105,7 +105,7 @@ public class FacultyOperationController {
 
     @GetMapping("/findAllNonExistingLabs")
     public ResponseEntity<List<String>> getAllNonExistingLabs() {
-        Iterable<Lab> all = labOperationService.findAll();
+        Iterable<Lab> all = labOperationDAO.findAll();
         Set<String> labList = new HashSet<>();
         all.forEach(lab -> {
             labList.add(lab.getLabName());
@@ -122,20 +122,20 @@ public class FacultyOperationController {
 
     @GetMapping("/getLab/{id}")
     public ResponseEntity<Lab> getLabById(@PathVariable int id) {
-        Optional<Lab> lab = labOperationService.findById(id);
+        Optional<Lab> lab = labOperationDAO.findById(id);
         return lab.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteLab/{id}")
     public ResponseEntity<String> deleteLabId(@PathVariable int id) {
-        labOperationService.deleteById(id);
+        labOperationDAO.deleteById(id);
         String message = "Lab with id: " + id + " removed successfully";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @GetMapping("/getLabByLabName/{labName}")
     public ResponseEntity<Lab> getLabByLabName(@PathVariable String labName) {
-        Iterable<Lab> all = labOperationService.findAll();
+        Iterable<Lab> all = labOperationDAO.findAll();
         final Lab[] response = {null};
         all.forEach(lab -> {
             if (lab.getLabName().equals(labName))
@@ -148,7 +148,7 @@ public class FacultyOperationController {
 
     @GetMapping("/getExecutionSummary")
     public ResponseEntity<List<Execution>> getExecutionSummary() {
-        List<Execution> all = commandExecutionService.findAll();
+        List<Execution> all = commandExecutionDAO.findAll();
         return new ResponseEntity<>(all, HttpStatus.OK);
     }
 }

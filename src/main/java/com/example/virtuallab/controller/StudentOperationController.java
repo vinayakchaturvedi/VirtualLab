@@ -3,9 +3,9 @@ package com.example.virtuallab.controller;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
-import com.example.virtuallab.service.CommandExecutionService;
-import com.example.virtuallab.service.LabOperationService;
-import com.example.virtuallab.service.StudentOperationService;
+import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.LabOperationDAO;
+import com.example.virtuallab.dao.StudentOperationDAO;
 import com.example.virtuallab.service.StudentOperationServiceUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.slf4j.Logger;
@@ -24,13 +24,13 @@ public class StudentOperationController {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(StudentOperationController.class);
     @Autowired
-    private StudentOperationService studentOperationService;
+    private StudentOperationDAO studentOperationDAO;
     @Autowired
     private StudentOperationServiceUtil studentOperationServiceUtil;
     @Autowired
-    private LabOperationService labOperationService;
+    private LabOperationDAO labOperationDAO;
     @Autowired
-    private CommandExecutionService commandExecutionService;
+    private CommandExecutionDAO commandExecutionDAO;
 
     /*
     {
@@ -42,7 +42,7 @@ public class StudentOperationController {
      */
     @PostMapping("/addStudent")
     public ResponseEntity<Student> addStudent(@RequestBody Student student) {
-        Student response = studentOperationService.save(student);
+        Student response = studentOperationDAO.save(student);
         return new ResponseEntity<>(response.shallowCopy(true), HttpStatus.OK);
     }
 
@@ -54,7 +54,7 @@ public class StudentOperationController {
      */
     @PostMapping("/verifyStudentLogin")
     public ResponseEntity<Student> verifyStudentLogin(@RequestBody Student request) {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(request.getUserName()) &&
@@ -68,7 +68,7 @@ public class StudentOperationController {
 
     @GetMapping("/findAllStudents")
     public ResponseEntity<List<Student>> getAllStudents() {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         List<Student> studentList = new ArrayList<>();
         all.forEach(student -> {
             studentList.add(student.shallowCopy(true));
@@ -78,7 +78,7 @@ public class StudentOperationController {
 
     @GetMapping("/getStudentByUserName/{userName}")
     public ResponseEntity<Student> getStudentByUserName(@PathVariable String userName) {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(userName))
@@ -91,23 +91,23 @@ public class StudentOperationController {
 
     @GetMapping("/getStudentById/{id}")
     public ResponseEntity<Student> getStudentById(@PathVariable int id) {
-        Optional<Student> student = studentOperationService.findById(id);
+        Optional<Student> student = studentOperationDAO.findById(id);
         return student.map(value -> new ResponseEntity<>(value.shallowCopy(true), HttpStatus.OK)).orElseGet(() -> new ResponseEntity<>(null, HttpStatus.BAD_REQUEST));
     }
 
     @DeleteMapping("/deleteStudent/{id}")
     public ResponseEntity<String> deleteStudentId(@PathVariable int id) {
-        studentOperationService.deleteById(id);
+        studentOperationDAO.deleteById(id);
         String message = "Student with id: " + id + " removed successfully";
         return new ResponseEntity<>(message, HttpStatus.OK);
     }
 
     @GetMapping("/getNotRegisteredLabs/{id}")
     public ResponseEntity<List<Lab>> getNotRegisteredLabs(@PathVariable int id) {
-        Optional<Student> student = studentOperationService.findById(id);
+        Optional<Student> student = studentOperationDAO.findById(id);
         Set<String> alreadyRegisteredLabs = new HashSet<>();
         student.get().getLabs().forEach(lab -> alreadyRegisteredLabs.add(lab.getLabName()));
-        Iterable<Lab> allLabs = labOperationService.findAll();
+        Iterable<Lab> allLabs = labOperationDAO.findAll();
         List<Lab> notRegisteredLabs = new ArrayList<>();
         allLabs.forEach(lab -> {
             if (!alreadyRegisteredLabs.contains(lab.getLabName())) {
@@ -153,7 +153,7 @@ public class StudentOperationController {
         String unit = "";
         execution.setCommand("du -shk");
         execution.setUserName(userName);
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(userName))
@@ -187,7 +187,7 @@ public class StudentOperationController {
         execution.setCommand("du -shk");
         execution.setUserName("");
         List<Lab> labs = new ArrayList<>();
-        labOperationService.findAll().forEach(lab -> {
+        labOperationDAO.findAll().forEach(lab -> {
             labs.add(lab);
         });
         for (Lab lab : labs) {
@@ -213,7 +213,7 @@ public class StudentOperationController {
 
     @GetMapping("/getNumberOfLabs/{userName}")
     public ResponseEntity<String> getNumberOfLabs(@PathVariable String userName) {
-        Iterable<Student> all = studentOperationService.findAll();
+        Iterable<Student> all = studentOperationDAO.findAll();
         final Student[] response = {null};
         all.forEach(student -> {
             if (student.getUserName().equals(userName))
@@ -225,7 +225,7 @@ public class StudentOperationController {
     @GetMapping("/getExecution/{userName}")
     public ResponseEntity<List<Execution>> getExecution(@PathVariable String userName) {
         List<Execution> response = new ArrayList<>();
-        List<Execution> all = commandExecutionService.findAll(Sort.by(Sort.Direction.DESC, "time"));
+        List<Execution> all = commandExecutionDAO.findAll(Sort.by(Sort.Direction.DESC, "time"));
         for (int i = 0; i < Math.min(5, all.size()); i++) {
             Execution execution = all.get(i);
             if (execution.getUserName().equals(userName)) {

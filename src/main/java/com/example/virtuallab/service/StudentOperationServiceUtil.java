@@ -3,6 +3,9 @@ package com.example.virtuallab.service;
 import com.example.virtuallab.bean.Execution;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.LabOperationDAO;
+import com.example.virtuallab.dao.StudentOperationDAO;
 import com.example.virtuallab.utils.Constants;
 import com.example.virtuallab.utils.FileOperation;
 import com.example.virtuallab.utils.ListOfValidCommands;
@@ -17,25 +20,39 @@ import java.util.HashSet;
 public class StudentOperationServiceUtil {
 
     @Autowired
-    private LabOperationService labOperationService;
+    private LabOperationDAO labOperationDAO;
     @Autowired
-    private StudentOperationService studentOperationService;
+    private StudentOperationDAO studentOperationDAO;
     @Autowired
-    private CommandExecutionService commandExecutionService;
+    private CommandExecutionDAO commandExecutionDAO;
+    private ExecuteLinuxProcess executeLinuxProcess;
+
+    public StudentOperationServiceUtil() {
+        executeLinuxProcess = new ExecuteLinuxProcess();
+    }
+
+    public StudentOperationServiceUtil(ExecuteLinuxProcess executeLinuxProcess) {
+        this.executeLinuxProcess = executeLinuxProcess;
+    }
+
 
     public Lab labRegistration(JsonNode jsonNode) {
         int studentId = jsonNode.get("studentId").asInt();
         int labId = jsonNode.get("labId").asInt();
 
-        Student student = studentOperationService.findById(studentId).orElseGet(null);
-        Lab lab = labOperationService.findById(labId).orElseGet(null);
+
+        if (!studentOperationDAO.findById(studentId).isPresent() ||
+                !labOperationDAO.findById(labId).isPresent()) return null;
+
+        Student student = studentOperationDAO.findById(studentId).orElseGet(null);
+        Lab lab = labOperationDAO.findById(labId).orElseGet(null);
 
         if (student == null || lab == null) return null;
 
         student.getLabs().add(lab);
         lab.setStudentsRegistered(lab.getStudentsRegistered() + 1);
-        studentOperationService.save(student);
-        labOperationService.save(lab);
+        studentOperationDAO.save(student);
+        labOperationDAO.save(lab);
         createUserInContainer(lab, student);
         return lab;
     }
@@ -50,7 +67,7 @@ public class StudentOperationServiceUtil {
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String createUserCommand = "'useradd -m -p $(openssl passwd -1 " + userName + ") " + userName + "'";
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + createUserCommand, "-i", inventoryPath);
-        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        this.executeLinuxProcess.executeProcess(processBuilder);
     }
 
     public Execution executeCommand(Execution execution) {
@@ -77,7 +94,7 @@ public class StudentOperationServiceUtil {
         String command = "bash -c \\\"cd /home/" + userName + " && " + commandRequest + "\\\"";
         command = "'" + command + "'";
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
-        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        this.executeLinuxProcess.executeProcess(processBuilder);
         new FileOperation().readJsonFile("/home/vinayak/output.json", execution);
         if (Constants.commandToStore.contains(linuxCommand)) {
             storeExecutionToMongoDB(execution);
@@ -87,7 +104,7 @@ public class StudentOperationServiceUtil {
 
     private void storeExecutionToMongoDB(Execution execution) {
         execution.setTime(LocalDateTime.now());
-        commandExecutionService.save(execution);
+        commandExecutionDAO.save(execution);
     }
 
     private Execution handleViRead(Execution execution) {
@@ -117,7 +134,7 @@ public class StudentOperationServiceUtil {
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String sourcePath = System.getProperty("user.dir") + "/" + fileName;
         processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/" + userName, "-i", inventoryPath);
-        new ExecuteLinuxProcess().executeProcess(processBuilder);
+        this.executeLinuxProcess.executeProcess(processBuilder);
         new FileOperation().deleteFile(fileName);
     }
 
