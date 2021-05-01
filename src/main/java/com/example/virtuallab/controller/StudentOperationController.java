@@ -130,7 +130,8 @@ public class StudentOperationController {
         }
         message = "Successfully registered the StudentId " +
                 jsonNode.get("studentId") + " for the lab " + response.getLabName();
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        LOGGER.info(message);
+        return new ResponseEntity<>("Registration Successful", HttpStatus.OK);
     }
 
     @PostMapping(value = "/execCommand", produces = {"application/json"})

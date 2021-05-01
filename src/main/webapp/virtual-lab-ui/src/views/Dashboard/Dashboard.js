@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 // react plugin for creating charts
 // import ChartistGraph from "react-chartist";
 // @material-ui/core
@@ -67,11 +67,9 @@ export default function Dashboard({...rest}) {
         return tempRegisteredLab;
     });
 
-    console.log("registeredLab: ", registeredLab);
-
     useState(() => {
         fetch(
-            'http://localhost:8700/getSize/MT2020046/', {
+            'http://localhost:8700/getSize/' + student.userName, {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -82,6 +80,27 @@ export default function Dashboard({...rest}) {
             .then(res => res.text())
             .then(response => {
                 setSize(response)
+            })
+            .catch(error => console.log(error));
+
+        fetch(
+            'http://localhost:8700/getStudentById/' + student.studentId, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                setStudent(response)
+                const tempRegisteredLab = {}
+                response.labs.forEach(lab => {
+                    tempRegisteredLab[lab.labName] = lab
+                })
+                setRegisteredLab(tempRegisteredLab)
+                setNumberOfLabs(response.labs.length)
             })
             .catch(error => console.log(error));
 
@@ -289,6 +308,7 @@ export default function Dashboard({...rest}) {
                                                                     .then(res => res.text())
                                                                     .then(response => {
                                                                         setRegistrationMessage(response)
+                                                                        console.log("RegistrationMessage: ", registrationMessage)
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
@@ -362,10 +382,12 @@ export default function Dashboard({...rest}) {
                                                                     .then(res => res.text())
                                                                     .then(response => {
                                                                         setRegistrationMessage(response)
+                                                                        console.log("RegistrationMessage: ", response)
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
                                                         >Register</Button>
+                                                        <h4>{registrationMessage}</h4>
                                                     </div>
                                                     <div>
                                                         <p style={{
@@ -434,10 +456,12 @@ export default function Dashboard({...rest}) {
                                                                     .then(res => res.text())
                                                                     .then(response => {
                                                                         setRegistrationMessage(response)
+                                                                        console.log("RegistrationMessage: ", response)
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
                                                         >Register</Button>
+                                                        <h4>{registrationMessage}</h4>
                                                     </div>
                                                     <div>
                                                         <p style={{
