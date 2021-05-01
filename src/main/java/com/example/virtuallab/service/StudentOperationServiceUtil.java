@@ -10,6 +10,8 @@ import com.example.virtuallab.utils.Constants;
 import com.example.virtuallab.utils.FileOperation;
 import com.example.virtuallab.utils.ListOfValidCommands;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,6 +21,7 @@ import java.util.HashSet;
 @Component
 public class StudentOperationServiceUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(StudentOperationServiceUtil.class);
     @Autowired
     private LabOperationDAO labOperationDAO;
     @Autowired
@@ -103,6 +106,7 @@ public class StudentOperationServiceUtil {
     }
 
     private void storeExecutionToMongoDB(Execution execution) {
+        LOGGER.info("LabName: " + execution.getLabName() + " ---- ExecutionResult: " + execution.isSuccessfulExecution());
         execution.setTime(LocalDateTime.now());
         commandExecutionDAO.save(execution);
     }
