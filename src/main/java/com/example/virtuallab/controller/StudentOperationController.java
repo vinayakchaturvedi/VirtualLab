@@ -234,4 +234,11 @@ public class StudentOperationController {
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @PostMapping("/completeExercise")
+    public ResponseEntity<String> completeExercise(@RequestBody JsonNode jsonNode) {
+        if (studentOperationServiceUtil.completeExercise(jsonNode))
+            return new ResponseEntity<>("Successfully complete", HttpStatus.OK);
+        return new ResponseEntity<>("Error while saving", HttpStatus.BAD_REQUEST);
+    }
 }

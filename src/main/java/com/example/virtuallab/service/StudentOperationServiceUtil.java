@@ -1,9 +1,11 @@
 package com.example.virtuallab.service;
 
 import com.example.virtuallab.bean.Execution;
+import com.example.virtuallab.bean.Exercise;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.ExerciseDAO;
 import com.example.virtuallab.dao.LabOperationDAO;
 import com.example.virtuallab.dao.StudentOperationDAO;
 import com.example.virtuallab.utils.Constants;
@@ -28,6 +30,8 @@ public class StudentOperationServiceUtil {
     private StudentOperationDAO studentOperationDAO;
     @Autowired
     private CommandExecutionDAO commandExecutionDAO;
+    @Autowired
+    private ExerciseDAO exerciseDAO;
     private ExecuteLinuxProcess executeLinuxProcess;
 
     public StudentOperationServiceUtil() {
@@ -154,6 +158,21 @@ public class StudentOperationServiceUtil {
                 return false;
         }
 
+        return true;
+    }
+
+    public boolean completeExercise(JsonNode jsonNode) {
+        int studentId = jsonNode.get("studentId").asInt();
+        int exerciseId = jsonNode.get("exerciseId").asInt();
+
+        if (!studentOperationDAO.findById(studentId).isPresent() || !exerciseDAO.findById(exerciseId).isPresent())
+            return false;
+        Student student = studentOperationDAO.findById(studentId).get();
+        Exercise exercise = exerciseDAO.findById(exerciseId).get();
+
+        student.getExercisesCompleted().add(exercise);
+        student.getExercisesPending().remove(exercise);
+        studentOperationDAO.save(student);
         return true;
     }
 }
