@@ -84,7 +84,7 @@ public class FacultyOperationServiceUtil {
         Lab lab = labOperationDAO.findById(labId).get();
         int numberOfQuestions = jsonNode.get("numberOfQuestions").asInt();
         for (int i = 0; i < numberOfQuestions; i++) {
-            String question = jsonNode.get(String.valueOf(i)).asText();
+            String question = jsonNode.get(String.valueOf(i + 1)).asText();
             Exercise exercise = new Exercise();
             exercise.setQuestion(question);
             exercise.setLab(lab);

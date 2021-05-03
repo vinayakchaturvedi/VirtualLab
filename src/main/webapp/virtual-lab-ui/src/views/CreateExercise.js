@@ -7,7 +7,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Input} from "@material-ui/core";
+import {Button, Input} from "@material-ui/core";
 import plus_sign from "../plus_sign.png";
 
 const StyledTableCell = withStyles((theme) => ({
@@ -45,43 +45,56 @@ const useStyles = makeStyles({
 export default function CreateExercise() {
     const classes = useStyles();
 
-    const [faculty, setFaculty] = useState({
-        "facultyId": 2,
-        "userName": "T02",
-        "facultyName": "Chandrashekar Ramanathan",
-        "emailId": "RC@gmail.com",
-        "password": "root",
-        "labs": [
-            {
-                "labId": 4,
-                "labName": "java",
-                "studentsRegistered": 6,
-                "creationDate": "2021-04-25",
-                "faculty": null,
-                "students": null,
-                "exercises": []
-            }
-        ]
+    const [lab, setLab] = useState({
+        "labId": 2,
+        "labName": "python",
+        "studentsRegistered": 6,
+        "creationDate": "2021-04-24",
+        "faculty": {
+            "facultyId": 1,
+            "userName": "T01",
+            "facultyName": "Thangaraju B",
+            "emailId": "th@gmail.com",
+            "password": "root",
+            "labs": []
+        },
+        "students": null,
+        "exercises": []
     });
 
-    const [exercises, setExercises] = useState([[1, <Input fullWidth/>]]);
-    const [exercisesRow, setExercisesRow] = useState([createData(1, <Input fullWidth/>)])
+    const [backendInput, setBackendInput] = useState({})
+    const [exercises, setExercises] = useState([[1, <Input
+        name={1}
+        placeholder="Write you question here"
+        onChange={event1 => {
+            let currBackendInput = backendInput
+            currBackendInput[event1.target.name] = event1.target.value
+            setBackendInput(currBackendInput)
+        }
+        }
+        fullWidth/>]]);
+    const [exercisesRow, setExercisesRow] = useState([createData(1, <Input
+        name={1}
+        placeholder="Write you question here"
+        onChange={event1 => {
+            let currBackendInput = backendInput
+            currBackendInput[event1.target.name] = event1.target.value
+            setBackendInput(currBackendInput)
+        }
+        }
+        fullWidth/>)])
 
     function createData(sNo, questions) {
         return {sNo, questions};
     }
 
     function createExerciseRow() {
-        console.log(exercises)
         let rowsTemp = [];
         for (let exercisesKey in exercises) {
             rowsTemp.push(createData(exercises[exercisesKey][0], exercises[exercisesKey][1]))
         }
         setExercisesRow(rowsTemp)
     }
-
-    console.log(exercises)
-
 
     return (
         <div style={{alignContent: "center"}}>
@@ -110,7 +123,17 @@ export default function CreateExercise() {
                                         src={plus_sign}
                                         onClick={event => {
                                             let currExercises = exercises;
-                                            currExercises.push([currExercises.length + 1, <Input fullWidth/>])
+                                            currExercises.push([currExercises.length + 1, <Input
+                                                fullWidth
+                                                name={currExercises.length + 1}
+                                                placeholder="Write you question here"
+                                                onChange={event1 => {
+                                                    let currBackendInput = backendInput
+                                                    currBackendInput[event1.target.name] = event1.target.value
+                                                    setBackendInput(currBackendInput)
+                                                }
+                                                }
+                                            />])
                                             setExercises(currExercises)
                                             createExerciseRow()
                                         }
@@ -122,6 +145,28 @@ export default function CreateExercise() {
                     </TableBody>
                 </Table>
             </TableContainer>
+            <Button onClick={event => {
+                let currBackendInput = backendInput
+                currBackendInput["numberOfQuestions"] = exercises.length;
+                currBackendInput["labId"] = lab.labId;
+                console.log("After: ", currBackendInput)
+                fetch(
+                    'http://localhost:8700/createExercise/', {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json;charset=utf-8',
+                            'Accept': '*/*'
+                        },
+                        body: JSON.stringify(currBackendInput)
+                    }
+                )
+                    .then(res => res.text())
+                    .then(response => {
+                        console.log(response)
+                    })
+                    .catch(error => console.log(error));
+            }
+            }>Submit</Button>
         </div>
     );
 }
