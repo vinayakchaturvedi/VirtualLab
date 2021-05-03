@@ -19,7 +19,6 @@ const dashboardStyle = theme => ({
     position: "relative",
     float: "right",
     ...transition,
-    maxHeight: "100%",
     width: "100%",
     overflowScrolling: "touch"
   },

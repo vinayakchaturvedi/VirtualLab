@@ -40,6 +40,8 @@ import Button from "../../components/CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
+import Table from "../../components/Table/Table";
+import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 let ps;
 
@@ -61,8 +63,110 @@ export default function FacultyDashboard({...rest}) {
     const [creationMessage, setCreationMessage] = useState("")
     const [executionSummary, setExecutionSummary] = useState({})
     const [labels, setLabels] = useState(["Java", "Python"]);
+    const [exercises, setExercises] = useState({"java": undefined, "python": undefined, "c_lang": undefined});
+    const [exerciseSummary, setExerciseSummary] = useState({"java": [], "python": [], "c_lang": []})
 
     useState(() => {
+
+        fetch(
+            'http://localhost:8700/getAllExerciseByLabName/java', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                let currExercises = exercises;
+                currExercises["java"] = response.length === 0 ? undefined : response
+                if (response.length !== 0) {
+                    let index = 1;
+                    let currentExerciseSummary = []
+                    response.forEach(exercise => {
+                        let currExerciseRow = []
+                        currExerciseRow.push(index++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(exercise.studentsCompleted.length)
+                        currExerciseRow.push(exercise.studentsPending.length)
+                        currentExerciseSummary.push(currExerciseRow)
+                    })
+                    let exerciseSummaryTemp = exerciseSummary
+                    exerciseSummaryTemp["java"] = currentExerciseSummary;
+                    setExerciseSummary(exerciseSummaryTemp)
+                }
+                setExercises(currExercises)
+                console.log(exercises)
+            })
+            .catch(error => console.log("Getting Error: ", error));
+
+        fetch(
+            'http://localhost:8700/getAllExerciseByLabName/python', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                let currExercises = exercises;
+                currExercises["python"] = response.length === 0 ? undefined : response
+                if (response.length !== 0) {
+                    let currentExerciseSummary = []
+                    let index = 1;
+                    response.forEach(exercise => {
+                        let currExerciseRow = []
+                        currExerciseRow.push(index++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(exercise.studentsCompleted.length)
+                        currExerciseRow.push(exercise.studentsPending.length)
+                        currentExerciseSummary.push(currExerciseRow)
+                    })
+                    let exerciseSummaryTemp = exerciseSummary
+                    exerciseSummaryTemp["python"] = currentExerciseSummary;
+                    setExerciseSummary(exerciseSummaryTemp)
+                }
+                setExercises(currExercises)
+                console.log(exercises)
+            })
+            .catch(error => console.log("Getting Error: ", error));
+
+        fetch(
+            'http://localhost:8700/getAllExerciseByLabName/c_lang', {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                let currExercises = exercises;
+                currExercises["c_lang"] = response.length === 0 ? undefined : response
+                if (response.length !== 0) {
+                    let currentExerciseSummary = []
+                    let index = 1;
+                    response.forEach(exercise => {
+                        let currExerciseRow = []
+                        currExerciseRow.push(index++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(exercise.studentsCompleted.length)
+                        currExerciseRow.push(exercise.studentsPending.length)
+                        currentExerciseSummary.push(currExerciseRow)
+                    })
+                    let exerciseSummaryTemp = exerciseSummary
+                    exerciseSummaryTemp["c_lang"] = currentExerciseSummary;
+                    setExerciseSummary(exerciseSummaryTemp)
+                }
+                setExercises(currExercises)
+                console.log(exercises)
+            })
+            .catch(error => console.log("Getting Error: ", error));
+
         fetch(
             'http://localhost:8700/getTotalSize/', {
                 method: "GET",
@@ -627,6 +731,110 @@ export default function FacultyDashboard({...rest}) {
                                                 </div>
                                             )
                                         },
+                                    ]}
+                                />
+                            </GridItem>
+                        </GridContainer>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <CustomTabs
+                                    title="Labs :"
+                                    headerColor="primary"
+                                    tabs={[
+                                        {
+                                            tabName: "C Language",
+                                            display: true,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.c_lang !== undefined ? "none" : "block"}}>
+                                                        <h4>Lab Doesn't Exist</h4>
+                                                    </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.c_lang === undefined ? "none" : "block"}}>
+                                                        <div
+                                                            style={{display: exerciseSummary.c_lang.length === 0 ? "block" : "none"}}>
+                                                            <h4>Lab Doesn't Exist</h4>
+                                                        </div>
+                                                        <div
+                                                            style={{display: exerciseSummary.c_lang.length === 0 ? "none" : "block"}}>
+                                                            <Table
+                                                                tableHeaderColor="warning"
+                                                                tableHead={["S.No", "Question", "Successful Submission", "Pending Submission"]}
+                                                                tableData={exerciseSummary.c_lang}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Java",
+                                            display: true,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.java !== undefined ? "none" : "block"}}>
+                                                        <h4>Lab Doesn't Exist</h4>
+                                                    </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.java === undefined ? "none" : "block"}}>
+                                                        <div
+                                                            style={{display: exerciseSummary.java.length === 0 ? "block" : "none"}}>
+                                                            <Button
+                                                                color="info"
+                                                                target="_blank"
+                                                                round
+                                                                onClick={() => {
+                                                                    console.log("alreadyCreatedLabs: ", alreadyCreatedLabs.java)
+                                                                    rest.history.push({
+                                                                        pathname: '/CreateExercise',
+                                                                        state: {faculty: faculty, lab: alreadyCreatedLabs.java},
+                                                                    })
+                                                                }}>Create Exercise</Button>
+                                                        </div>
+                                                        <div
+                                                            style={{display: exerciseSummary.java.length === 0 ? "none" : "block"}}>
+                                                            <Table
+                                                                tableHeaderColor="warning"
+                                                                tableHead={["S.No", "Question", "Successful Submission", "Pending Submission"]}
+                                                                tableData={exerciseSummary.java}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Python",
+                                            display: true,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.python !== undefined ? "none" : "block"}}>
+                                                        <h4>Lab Doesn't Exist</h4>
+                                                    </div>
+                                                    <div
+                                                        style={{display: alreadyCreatedLabs.python === undefined ? "none" : "block"}}>
+                                                        <div
+                                                            style={{display: exerciseSummary.python.length === 0 ? "block" : "none"}}>
+                                                            <h4>Lab Doesn't Exist</h4>
+                                                        </div>
+                                                        <div
+                                                            style={{display: exerciseSummary.python.length === 0 ? "none" : "block"}}>
+                                                            <Table
+                                                                tableHeaderColor="warning"
+                                                                tableHead={["S.No", "Question", "Successful Submission", "Pending Submission"]}
+                                                                tableData={exerciseSummary.python}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
                                     ]}
                                 />
                             </GridItem>

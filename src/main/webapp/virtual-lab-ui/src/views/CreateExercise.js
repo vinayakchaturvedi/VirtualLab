@@ -7,8 +7,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import {Button, Input} from "@material-ui/core";
+import {Input} from "@material-ui/core";
 import plus_sign from "../plus_sign.png";
+import Button from "../components/CustomButtons/Button";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -42,25 +43,11 @@ const useStyles = makeStyles({
     })
 ;
 
-export default function CreateExercise() {
+export default function CreateExercise({...rest}) {
     const classes = useStyles();
-
-    const [lab, setLab] = useState({
-        "labId": 2,
-        "labName": "python",
-        "studentsRegistered": 6,
-        "creationDate": "2021-04-24",
-        "faculty": {
-            "facultyId": 1,
-            "userName": "T01",
-            "facultyName": "Thangaraju B",
-            "emailId": "th@gmail.com",
-            "password": "root",
-            "labs": []
-        },
-        "students": null,
-        "exercises": []
-    });
+    console.log("CreateExercise: ", rest)
+    const [lab, setLab] = useState(rest.history.location.state.lab);
+    const [faculty, setFaculty] = useState(rest.history.location.state.faculty);
 
     const [backendInput, setBackendInput] = useState({})
     const [exercises, setExercises] = useState([[1, <Input
@@ -145,7 +132,11 @@ export default function CreateExercise() {
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Button onClick={event => {
+            <Button
+                color="info"
+                target="_blank"
+                round
+                onClick={event => {
                 let currBackendInput = backendInput
                 currBackendInput["numberOfQuestions"] = exercises.length;
                 currBackendInput["labId"] = lab.labId;
@@ -165,6 +156,11 @@ export default function CreateExercise() {
                         console.log(response)
                     })
                     .catch(error => console.log(error));
+                rest.history.push({
+                    pathname: '/facultyDashboard',
+                    state: {faculty: faculty}
+                })
+
             }
             }>Submit</Button>
         </div>
