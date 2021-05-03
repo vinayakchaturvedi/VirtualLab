@@ -7,6 +7,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
+import {Input} from "@material-ui/core";
+import plus_sign from "../plus_sign.png";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -26,19 +28,19 @@ const StyledTableRow = withStyles((theme) => ({
     },
 }))(TableRow);
 
-function createData(name, calories, fat, carbs, protein) {
-    return {name, calories, fat, carbs, protein};
-}
-
-const rows = [
-    createData('1', "WAP to print Hello world"),
-];
 
 const useStyles = makeStyles({
-    table: {
-        minWidth: 700,
-    },
-});
+        table: {
+            minWidth: 700,
+        },
+        img: {
+            borderRadius: "4px",
+            padding: "5px",
+            width: "50px",
+            alignContent: "center",
+        }
+    })
+;
 
 export default function CreateExercise() {
     const classes = useStyles();
@@ -62,28 +64,64 @@ export default function CreateExercise() {
         ]
     });
 
-    const [exercises, setExercises] = useState({});
+    const [exercises, setExercises] = useState([[1, <Input fullWidth/>]]);
+    const [exercisesRow, setExercisesRow] = useState([createData(1, <Input fullWidth/>)])
+
+    function createData(sNo, questions) {
+        return {sNo, questions};
+    }
+
+    function createExerciseRow() {
+        console.log(exercises)
+        let rowsTemp = [];
+        for (let exercisesKey in exercises) {
+            rowsTemp.push(createData(exercises[exercisesKey][0], exercises[exercisesKey][1]))
+        }
+        setExercisesRow(rowsTemp)
+    }
+
+    console.log(exercises)
+
 
     return (
-        <TableContainer component={Paper}>
-            <Table className={classes.table} aria-label="customized table">
-                <TableHead>
-                    <TableRow>
-                        <StyledTableCell>S. No.</StyledTableCell>
-                        <StyledTableCell align="left">Question</StyledTableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {rows.map((row) => (
-                        <StyledTableRow key={row.name}>
-                            <StyledTableCell component="th" scope="row">
-                                {row.name}
-                            </StyledTableCell>
-                            <StyledTableCell align="left">{row.calories}</StyledTableCell>
-                        </StyledTableRow>
-                    ))}
-                </TableBody>
-            </Table>
-        </TableContainer>
+        <div style={{alignContent: "center"}}>
+            <TableContainer style={{width: "70%"}} component={Paper}>
+                <Table className={classes.table} aria-label="customized table">
+                    <TableHead>
+                        <TableRow>
+                            <StyledTableCell>S. No.</StyledTableCell>
+                            <StyledTableCell align="left">Question</StyledTableCell>
+                            <StyledTableCell align="right">Add more</StyledTableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {exercisesRow.map((row) => (
+                            <StyledTableRow key={row.sNo}>
+                                <StyledTableCell component="th" scope="row">
+                                    {row.sNo}
+                                </StyledTableCell>
+                                <StyledTableCell
+                                    align="left">
+                                    {row.questions}
+                                </StyledTableCell>
+                                <StyledTableCell align="right">
+                                    <img
+                                        className={classes.img}
+                                        src={plus_sign}
+                                        onClick={event => {
+                                            let currExercises = exercises;
+                                            currExercises.push([currExercises.length + 1, <Input fullWidth/>])
+                                            setExercises(currExercises)
+                                            createExerciseRow()
+                                        }
+                                        }
+                                    />
+                                </StyledTableCell>
+                            </StyledTableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </div>
     );
 }
