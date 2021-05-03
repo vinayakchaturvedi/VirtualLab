@@ -41,7 +41,6 @@ import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
 import Table from "../../components/Table/Table";
-import dashboardStyle from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 let ps;
 
@@ -755,7 +754,20 @@ export default function FacultyDashboard({...rest}) {
                                                         style={{display: alreadyCreatedLabs.c_lang === undefined ? "none" : "block"}}>
                                                         <div
                                                             style={{display: exerciseSummary.c_lang.length === 0 ? "block" : "none"}}>
-                                                            <h4>Lab Doesn't Exist</h4>
+                                                            <Button
+                                                                color="info"
+                                                                target="_blank"
+                                                                round
+                                                                onClick={() => {
+                                                                    console.log("alreadyCreatedLabs: ", alreadyCreatedLabs.c_lang)
+                                                                    rest.history.push({
+                                                                        pathname: '/CreateExercise',
+                                                                        state: {
+                                                                            faculty: faculty,
+                                                                            lab: alreadyCreatedLabs.c_lang
+                                                                        },
+                                                                    })
+                                                                }}>Create Exercise</Button>
                                                         </div>
                                                         <div
                                                             style={{display: exerciseSummary.c_lang.length === 0 ? "none" : "block"}}>
@@ -791,7 +803,10 @@ export default function FacultyDashboard({...rest}) {
                                                                     console.log("alreadyCreatedLabs: ", alreadyCreatedLabs.java)
                                                                     rest.history.push({
                                                                         pathname: '/CreateExercise',
-                                                                        state: {faculty: faculty, lab: alreadyCreatedLabs.java},
+                                                                        state: {
+                                                                            faculty: faculty,
+                                                                            lab: alreadyCreatedLabs.java
+                                                                        },
                                                                     })
                                                                 }}>Create Exercise</Button>
                                                         </div>
@@ -821,7 +836,20 @@ export default function FacultyDashboard({...rest}) {
                                                         style={{display: alreadyCreatedLabs.python === undefined ? "none" : "block"}}>
                                                         <div
                                                             style={{display: exerciseSummary.python.length === 0 ? "block" : "none"}}>
-                                                            <h4>Lab Doesn't Exist</h4>
+                                                            <Button
+                                                                color="info"
+                                                                target="_blank"
+                                                                round
+                                                                onClick={() => {
+                                                                    console.log("alreadyCreatedLabs: ", alreadyCreatedLabs.python)
+                                                                    rest.history.push({
+                                                                        pathname: '/CreateExercise',
+                                                                        state: {
+                                                                            faculty: faculty,
+                                                                            lab: alreadyCreatedLabs.python
+                                                                        },
+                                                                    })
+                                                                }}>Create Exercise</Button>
                                                         </div>
                                                         <div
                                                             style={{display: exerciseSummary.python.length === 0 ? "none" : "block"}}>
