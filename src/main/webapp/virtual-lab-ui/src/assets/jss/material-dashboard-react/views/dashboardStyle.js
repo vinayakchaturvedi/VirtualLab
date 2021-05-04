@@ -92,6 +92,12 @@ const dashboardStyle = theme => ({
       fontWeight: "400",
       lineHeight: "1"
     }
+  },
+  plusImg: {
+    borderRadius: "4px",
+    padding: "5px",
+    width: "45px",
+    alignContent: "center",
   }
 });
 

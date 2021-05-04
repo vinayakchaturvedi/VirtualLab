@@ -43,6 +43,8 @@ import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
 import CardBody from "../../components/Card/CardBody";
+import plus_sign from "../../plus_sign.png";
+import PopUp from "./PopUp";
 
 let ps;
 
@@ -65,6 +67,8 @@ export default function Dashboard({...rest}) {
     const [executionSummary, setExecutionSummary] = useState([])
     const [completedExercise, setCompletedExercise] = useState({"java": [], "python": [], "c_lang": []})
     const [pendingExercise, setPendingExercise] = useState({"java": [], "python": [], "c_lang": []})
+    const [seen, setSeen] = useState(false)
+    const [errorCause, setErrorCause] = useState("")
 
     const [registeredLab, setRegisteredLab] = useState(() => {
         const tempRegisteredLab = {}
@@ -265,6 +269,22 @@ export default function Dashboard({...rest}) {
                     currExecutionRow.push(execution.labName)
                     currExecutionRow.push(execution.command)
                     currExecutionRow.push(execution.successfulExecution ? "Successful" : "Failed")
+                    if (execution.successfulExecution) {
+                        currExecutionRow.push(<div>-</div>)
+                    } else {
+                        currExecutionRow.push(
+                            <div>
+                                <img
+                                    className={classes.plusImg}
+                                    src={plus_sign}
+                                    onClick={() => {
+                                        setErrorCause(execution.result)
+                                        togglePop()
+                                    }}
+                                />
+                            </div>
+                        )
+                    }
                     executionSummary.push(currExecutionRow)
                 })
                 setExecutionSummary(executionSummary)
@@ -405,6 +425,16 @@ export default function Dashboard({...rest}) {
         };
     }, [mainPanel]);
 
+    let togglePop = () => {
+        setSeen(!seen)
+    };
+
+    /*if (seen) {
+        return (
+            <PopUp toggle={togglePop}/>
+        )
+    }*/
+
     return (
         <div className={classes.wrapper}>
             <Sidebar
@@ -418,7 +448,8 @@ export default function Dashboard({...rest}) {
                 {...rest}
             />
             <div className={classes.mainPanel} ref={mainPanel}>
-                <h2 style={{margin: "1%"}}>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span>
+                <h2 style={{margin: "1%"}}>Welcome back! <span
+                    style={{color: "#302c8c"}}>{student.studentName}</span>
                 </h2>
                 <div className={classes.map}>
                     <div style={{marginTop: "3%"}}>
@@ -829,13 +860,14 @@ export default function Dashboard({...rest}) {
                                     <CardBody>
                                         <Table
                                             tableHeaderColor="warning"
-                                            tableHead={["Lab Name", "Command", "Execution Result"]}
+                                            tableHead={["Lab Name", "Command", "Execution Result", "Error (If any)"]}
                                             tableData={executionSummary}
                                         />
                                     </CardBody>
                                 </Card>
                             </GridItem>
                         </GridContainer>
+                        {seen ? <PopUp toggle={togglePop} message={errorCause}/> : null}
                     </div>
                 </div>
             </div>

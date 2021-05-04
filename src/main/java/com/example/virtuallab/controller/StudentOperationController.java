@@ -227,7 +227,7 @@ public class StudentOperationController {
     public ResponseEntity<List<Execution>> getExecution(@PathVariable String userName) {
         List<Execution> response = new ArrayList<>();
         List<Execution> all = commandExecutionDAO.findAll(Sort.by(Sort.Direction.DESC, "time"));
-        for (int i = 0; i < Math.min(5, all.size()); i++) {
+        for (int i = 0; i < all.size() && response.size() < 5; i++) {
             Execution execution = all.get(i);
             if (execution.getUserName().equals(userName)) {
                 response.add(execution);
