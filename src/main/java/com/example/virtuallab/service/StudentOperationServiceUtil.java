@@ -146,6 +146,37 @@ public class StudentOperationServiceUtil {
         new FileOperation().deleteFile(fileName);
     }
 
+    private void saveSubmission(JsonNode jsonNode) {
+        String userName = studentOperationDAO.findById(jsonNode.get("studentId").asInt()).get().getUserName();
+        String exerciseId = jsonNode.get("exerciseId").asText();
+        String labName = jsonNode.get("labName").asText();
+        String content = jsonNode.get("content").asText();
+
+        String fileName = userName + "_" + exerciseId;
+        new FileOperation().writeToFile(fileName, content);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
+        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
+        String sourcePath = System.getProperty("user.dir") + "/" + fileName;
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/Exercise", "-i", inventoryPath);
+        this.executeLinuxProcess.executeProcess(processBuilder);
+        new FileOperation().deleteFile(fileName);
+    }
+
+    public Execution retrieveSubmission(JsonNode jsonNode) {
+        String userName = studentOperationDAO.findById(jsonNode.get("studentId").asInt()).get().getUserName();
+        String exerciseId = jsonNode.get("exerciseId").asText();
+        String labName = jsonNode.get("labName").asText();
+
+        String fileName = userName + "_" + exerciseId;
+        Execution execution = new Execution();
+        execution.setCommand("cat " + fileName);
+        execution.setUserName("Exercise");
+        execution.setLabName(labName);
+        execution = executeCommand(execution);
+        return execution;
+    }
+
     private boolean isValid(String command) {
         HashSet<String> listOfValidCommands = new HashSet<>();
         for (ListOfValidCommands validcmd : ListOfValidCommands.values()) {
@@ -173,6 +204,7 @@ public class StudentOperationServiceUtil {
         student.getExercisesCompleted().add(exercise);
         student.getExercisesPending().remove(exercise);
         studentOperationDAO.save(student);
+        saveSubmission(jsonNode);
         return true;
     }
 }

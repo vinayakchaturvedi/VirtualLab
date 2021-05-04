@@ -1,9 +1,6 @@
 package com.example.virtuallab.service;
 
-import com.example.virtuallab.bean.Exercise;
-import com.example.virtuallab.bean.Faculty;
-import com.example.virtuallab.bean.Lab;
-import com.example.virtuallab.bean.Student;
+import com.example.virtuallab.bean.*;
 import com.example.virtuallab.dao.ExerciseDAO;
 import com.example.virtuallab.dao.FacultyOperationDAO;
 import com.example.virtuallab.dao.LabOperationDAO;
@@ -27,6 +24,8 @@ public class FacultyOperationServiceUtil {
     private StudentOperationDAO studentOperationDAO;
     @Autowired
     private ExerciseDAO exerciseDAO;
+    @Autowired
+    private StudentOperationServiceUtil studentOperationServiceUtil;
     private ExecuteLinuxProcess executeLinuxProcess;
 
     public FacultyOperationServiceUtil() {
@@ -94,7 +93,16 @@ public class FacultyOperationServiceUtil {
                 studentOperationDAO.save(student);
             }
         }
+        createExerciseFolder(lab);
         return true;
+    }
+
+    private void createExerciseFolder(Lab lab) {
+        Execution execution = new Execution();
+        execution.setCommand("mkdir Exercise");
+        execution.setUserName("");
+        execution.setLabName(lab.getLabName());
+        studentOperationServiceUtil.executeCommand(execution);
     }
 
     public List<Exercise> getAllExerciseByLabName(String labName) {
