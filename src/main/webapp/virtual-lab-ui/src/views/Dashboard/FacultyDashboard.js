@@ -737,7 +737,7 @@ export default function FacultyDashboard({...rest}) {
                         <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
                                 <CustomTabs
-                                    title="Labs :"
+                                    title="Lab Exercise :"
                                     headerColor="primary"
                                     tabs={[
                                         {

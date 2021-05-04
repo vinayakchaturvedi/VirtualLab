@@ -683,22 +683,6 @@ export default function Dashboard({...rest}) {
                             </GridItem>
                         </GridContainer>
                         <GridContainer>
-                            <GridItem xs={12} sm={12} md={12}>
-                                <Card>
-                                    <CardHeader color="warning">
-                                        <h4 className={classes.cardTitleWhite}>Previous Executions</h4>
-                                    </CardHeader>
-                                    <CardBody>
-                                        <Table
-                                            tableHeaderColor="warning"
-                                            tableHead={["Lab Name", "Command", "Execution Result"]}
-                                            tableData={executionSummary}
-                                        />
-                                    </CardBody>
-                                </Card>
-                            </GridItem>
-                        </GridContainer>
-                        <GridContainer>
                             <GridItem xs={12} sm={12} md={6}>
                                 <CustomTabs
                                     title="Completed Exercise | Labs :"
@@ -834,6 +818,22 @@ export default function Dashboard({...rest}) {
                                         }
                                     ]}
                                 />
+                            </GridItem>
+                        </GridContainer>
+                        <GridContainer>
+                            <GridItem xs={12} sm={12} md={12}>
+                                <Card>
+                                    <CardHeader color="warning">
+                                        <h4 className={classes.cardTitleWhite}>Previous Executions</h4>
+                                    </CardHeader>
+                                    <CardBody>
+                                        <Table
+                                            tableHeaderColor="warning"
+                                            tableHead={["Lab Name", "Command", "Execution Result"]}
+                                            tableData={executionSummary}
+                                        />
+                                    </CardBody>
+                                </Card>
                             </GridItem>
                         </GridContainer>
                     </div>
