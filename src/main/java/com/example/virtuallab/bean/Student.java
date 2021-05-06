@@ -25,17 +25,31 @@ public class Student implements Cloneable {
             inverseJoinColumns = {@JoinColumn(name = "labId")})
     private List<Lab> labs;
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "students_Exercise_Completed", joinColumns = {@JoinColumn(name = "studentId")},
+            inverseJoinColumns = {@JoinColumn(name = "exerciseId")})
+    private List<Exercise> exercisesCompleted;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "students_Exercise_Pending", joinColumns = {@JoinColumn(name = "studentId")},
+            inverseJoinColumns = {@JoinColumn(name = "exerciseId")})
+    private List<Exercise> exercisesPending;
+
     public Student() {
         labs = new ArrayList<>();
+        exercisesCompleted = new ArrayList<>();
+        exercisesPending = new ArrayList<>();
     }
 
-    public Student(int studentId, String userName, String studentName, String emailId, String password, List<Lab> labs) {
+    public Student(int studentId, String userName, String studentName, String emailId, String password, List<Lab> labs, List<Exercise> exercisesCompleted, List<Exercise> exercisesPending) {
         this.studentId = studentId;
         this.userName = userName;
         this.studentName = studentName;
         this.emailId = emailId;
         this.password = password;
         this.labs = labs;
+        this.exercisesCompleted = exercisesCompleted;
+        this.exercisesPending = exercisesPending;
     }
 
     public int getStudentId() {
@@ -86,6 +100,22 @@ public class Student implements Cloneable {
         this.labs = labs;
     }
 
+    public List<Exercise> getExercisesCompleted() {
+        return exercisesCompleted;
+    }
+
+    public void setExercisesCompleted(List<Exercise> exercises) {
+        this.exercisesCompleted = exercises;
+    }
+
+    public List<Exercise> getExercisesPending() {
+        return exercisesPending;
+    }
+
+    public void setExercisesPending(List<Exercise> exercisesPending) {
+        this.exercisesPending = exercisesPending;
+    }
+
     @Override
     public String toString() {
         return "Student{" +
@@ -95,6 +125,8 @@ public class Student implements Cloneable {
                 ", emailId='" + emailId + '\'' +
                 ", password='" + password + '\'' +
                 ", labs=" + labs +
+                ", completedExercise=" + exercisesCompleted.size() +
+                ", pendingExercise=" + exercisesPending.size() +
                 '}';
     }
 
@@ -107,9 +139,17 @@ public class Student implements Cloneable {
         try {
             Student clonedStudent = (Student) this.clone();
             clonedStudent.labs = new ArrayList<>();
+            clonedStudent.exercisesCompleted = new ArrayList<>();
+            clonedStudent.exercisesPending = new ArrayList<>();
             if (isNestingRequired) {
                 for (Lab lab : labs) {
                     clonedStudent.labs.add(lab.shallowCopy(false));
+                }
+                for (Exercise exercise : exercisesCompleted) {
+                    clonedStudent.exercisesCompleted.add(exercise.shallowCopy(false));
+                }
+                for (Exercise exercise : exercisesPending) {
+                    clonedStudent.exercisesPending.add(exercise.shallowCopy(false));
                 }
             }
             return clonedStudent;

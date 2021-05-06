@@ -43,6 +43,8 @@ import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
 import CardBody from "../../components/Card/CardBody";
+import plus_sign from "../../plus_sign.png";
+import PopUp from "./PopUp";
 
 let ps;
 
@@ -50,6 +52,8 @@ const useStyles = makeStyles(styles);
 
 export default function Dashboard({...rest}) {
 
+
+    console.log("student: ", rest.history.location.state.student)
     const classes = useStyles();
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);
@@ -61,6 +65,10 @@ export default function Dashboard({...rest}) {
     const [allLabs, setAllLabs] = useState({});
     const [registrationMessage, setRegistrationMessage] = useState("")
     const [executionSummary, setExecutionSummary] = useState([])
+    const [completedExercise, setCompletedExercise] = useState({"java": [], "python": [], "c_lang": []})
+    const [pendingExercise, setPendingExercise] = useState({"java": [], "python": [], "c_lang": []})
+    const [seen, setSeen] = useState(false)
+    const [errorCause, setErrorCause] = useState("")
 
     const [registeredLab, setRegisteredLab] = useState(() => {
         const tempRegisteredLab = {}
@@ -71,6 +79,164 @@ export default function Dashboard({...rest}) {
     });
 
     useState(() => {
+
+        fetch(
+            'http://localhost:8700/getPendingExercise/' + student.userName, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                let javaList = [], pythonList = [], c_langList = []
+                let jIndex = 1, pIndex = 1, cIndex = 1;
+                response.forEach(exercise => {
+                    let currExerciseRow = []
+                    if (exercise.lab.labName === "java") {
+                        currExerciseRow.push(jIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/SubmitExercise',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "java"
+                                })
+                            }}
+                        >Answer</Button>)
+                        javaList.push(currExerciseRow)
+                    }
+                    if (exercise.lab.labName === "python") {
+                        currExerciseRow.push(pIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/SubmitExercise',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "python"
+                                })
+                            }}
+                        >Answer</Button>)
+                        pythonList.push(currExerciseRow)
+                    }
+                    if (exercise.lab.labName === "c_lang") {
+                        currExerciseRow.push(cIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/SubmitExercise',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "c_lang"
+                                })
+                            }}
+                        >Answer</Button>)
+                        c_langList.push(currExerciseRow)
+                    }
+                })
+                let exercisePending = {}
+                exercisePending["java"] = javaList;
+                exercisePending["python"] = pythonList;
+                exercisePending["c_lang"] = c_langList;
+                setPendingExercise(exercisePending);
+            })
+            .catch(error => console.log(error));
+
+        fetch(
+            'http://localhost:8700/getCompletedExercise/' + student.userName, {
+                method: "GET",
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'Accept': '*/*'
+                },
+            }
+        )
+            .then(res => res.json())
+            .then(response => {
+                let javaList = [], pythonList = [], c_langList = []
+                let jIndex = 1, pIndex = 1, cIndex = 1;
+                response.forEach(exercise => {
+                    let currExerciseRow = []
+                    if (exercise.lab.labName === "java") {
+                        currExerciseRow.push(jIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/CheckSubmission',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "java"
+                                })
+                            }}
+                        >Check</Button>)
+                        javaList.push(currExerciseRow)
+                    }
+                    if (exercise.lab.labName === "python") {
+                        currExerciseRow.push(pIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/CheckSubmission',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "python"
+                                })
+                            }}
+                        >Check</Button>)
+                        pythonList.push(currExerciseRow)
+                    }
+                    if (exercise.lab.labName === "c_lang") {
+                        currExerciseRow.push(cIndex++)
+                        currExerciseRow.push(exercise.question)
+                        currExerciseRow.push(<Button
+                            color="info"
+                            target="_blank"
+                            round
+                            onClick={() => {
+                                rest.history.push({
+                                    pathname: '/CheckSubmission',
+                                    student: student,
+                                    exercise: exercise,
+                                    labName: "c_lang"
+                                })
+                            }}
+                        >Check</Button>)
+                        c_langList.push(currExerciseRow)
+                    }
+                })
+                let exerciseSubmitted = {}
+                exerciseSubmitted["java"] = javaList;
+                exerciseSubmitted["python"] = pythonList;
+                exerciseSubmitted["c_lang"] = c_langList;
+                setCompletedExercise(exerciseSubmitted);
+            })
+            .catch(error => console.log(error));
+
+
         fetch(
             'http://localhost:8700/getSize/' + student.userName, {
                 method: "GET",
@@ -103,6 +269,22 @@ export default function Dashboard({...rest}) {
                     currExecutionRow.push(execution.labName)
                     currExecutionRow.push(execution.command)
                     currExecutionRow.push(execution.successfulExecution ? "Successful" : "Failed")
+                    if (execution.successfulExecution) {
+                        currExecutionRow.push(<div>-</div>)
+                    } else {
+                        currExecutionRow.push(
+                            <div>
+                                <img
+                                    className={classes.plusImg}
+                                    src={plus_sign}
+                                    onClick={() => {
+                                        setErrorCause(execution.result)
+                                        togglePop()
+                                    }}
+                                />
+                            </div>
+                        )
+                    }
                     executionSummary.push(currExecutionRow)
                 })
                 setExecutionSummary(executionSummary)
@@ -243,6 +425,16 @@ export default function Dashboard({...rest}) {
         };
     }, [mainPanel]);
 
+    let togglePop = () => {
+        setSeen(!seen)
+    };
+
+    /*if (seen) {
+        return (
+            <PopUp toggle={togglePop}/>
+        )
+    }*/
+
     return (
         <div className={classes.wrapper}>
             <Sidebar
@@ -256,7 +448,8 @@ export default function Dashboard({...rest}) {
                 {...rest}
             />
             <div className={classes.mainPanel} ref={mainPanel}>
-                <h2 style={{margin: "1%"}}>Welcome back! <span style={{color: "#302c8c"}}>{student.studentName}</span>
+                <h2 style={{margin: "1%"}}>Welcome back! <span
+                    style={{color: "#302c8c"}}>{student.studentName}</span>
                 </h2>
                 <div className={classes.map}>
                     <div style={{marginTop: "3%"}}>
@@ -410,7 +603,6 @@ export default function Dashboard({...rest}) {
                                                                     .then(res => res.text())
                                                                     .then(response => {
                                                                         setRegistrationMessage(response)
-                                                                        console.log("RegistrationMessage: ", response)
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
@@ -486,7 +678,6 @@ export default function Dashboard({...rest}) {
                                                                     .then(res => res.text())
                                                                     .then(response => {
                                                                         setRegistrationMessage(response)
-                                                                        console.log("RegistrationMessage: ", response)
                                                                     })
                                                                     .catch(error => console.log(error));
                                                             }}
@@ -523,6 +714,144 @@ export default function Dashboard({...rest}) {
                             </GridItem>
                         </GridContainer>
                         <GridContainer>
+                            <GridItem xs={12} sm={12} md={6}>
+                                <CustomTabs
+                                    title="Completed Exercise | Labs :"
+                                    headerColor="primary"
+                                    tabs={[
+                                        {
+                                            tabName: "C Language",
+                                            display: cppLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: completedExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No submissions yet</h4></div>
+                                                    <div
+                                                        style={{display: completedExercise.c_lang.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Check submission"]}
+                                                            tableData={completedExercise.c_lang}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Java",
+                                            display: javaLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: completedExercise.java.length === 0 && javaLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No submissions yet</h4></div>
+                                                    <div
+                                                        style={{display: completedExercise.java.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Check submission"]}
+                                                            tableData={completedExercise.java}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Python",
+                                            display: pythonLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: completedExercise.python.length === 0 && pythonLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No submissions yet</h4></div>
+                                                    <div
+                                                        style={{display: completedExercise.python.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Check submission"]}
+                                                            tableData={completedExercise.python}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    ]}
+                                />
+                            </GridItem>
+                            <GridItem xs={12} sm={12} md={6}>
+                                <CustomTabs
+                                    title="Pending Exercise | Labs :"
+                                    headerColor="primary"
+                                    tabs={[
+                                        {
+                                            tabName: "C Language",
+                                            display: cppLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: pendingExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No pending Exercise</h4></div>
+                                                    <div
+                                                        style={{display: pendingExercise.c_lang.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Submit Now"]}
+                                                            tableData={pendingExercise.c_lang}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Java",
+                                            display: javaLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: pendingExercise.java.length === 0 && javaLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No pending Exercise</h4></div>
+                                                    <div
+                                                        style={{display: pendingExercise.java.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Submit Now"]}
+                                                            tableData={pendingExercise.java}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            tabName: "Python",
+                                            display: pythonLabDesc !== undefined,
+                                            tabIcon: BugReport,
+                                            tabContent: (
+                                                <div>
+                                                    <div
+                                                        style={{display: pendingExercise.python.length === 0 && pythonLabDesc !== undefined ? "block" : "none"}}>
+                                                        <h4>No pending Exercise</h4></div>
+                                                    <div
+                                                        style={{display: pendingExercise.python.length === 0 ? "none" : "block"}}>
+                                                        <Table
+                                                            tableHeaderColor="warning"
+                                                            tableHead={["S.No", "Question", "Submit Now"]}
+                                                            tableData={pendingExercise.python}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            )
+                                        }
+                                    ]}
+                                />
+                            </GridItem>
+                        </GridContainer>
+                        <GridContainer>
                             <GridItem xs={12} sm={12} md={12}>
                                 <Card>
                                     <CardHeader color="warning">
@@ -531,13 +860,14 @@ export default function Dashboard({...rest}) {
                                     <CardBody>
                                         <Table
                                             tableHeaderColor="warning"
-                                            tableHead={["Lab Name", "Command", "Execution Result"]}
+                                            tableHead={["Lab Name", "Command", "Execution Result", "Error (If any)"]}
                                             tableData={executionSummary}
                                         />
                                     </CardBody>
                                 </Card>
                             </GridItem>
                         </GridContainer>
+                        {seen ? <PopUp toggle={togglePop} message={errorCause}/> : null}
                     </div>
                 </div>
             </div>

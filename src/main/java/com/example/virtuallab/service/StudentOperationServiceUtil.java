@@ -1,9 +1,11 @@
 package com.example.virtuallab.service;
 
 import com.example.virtuallab.bean.Execution;
+import com.example.virtuallab.bean.Exercise;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.dao.CommandExecutionDAO;
+import com.example.virtuallab.dao.ExerciseDAO;
 import com.example.virtuallab.dao.LabOperationDAO;
 import com.example.virtuallab.dao.StudentOperationDAO;
 import com.example.virtuallab.utils.Constants;
@@ -28,6 +30,8 @@ public class StudentOperationServiceUtil {
     private StudentOperationDAO studentOperationDAO;
     @Autowired
     private CommandExecutionDAO commandExecutionDAO;
+    @Autowired
+    private ExerciseDAO exerciseDAO;
     private ExecuteLinuxProcess executeLinuxProcess;
 
     public StudentOperationServiceUtil() {
@@ -142,6 +146,37 @@ public class StudentOperationServiceUtil {
         new FileOperation().deleteFile(fileName);
     }
 
+    private void saveSubmission(JsonNode jsonNode) {
+        String userName = studentOperationDAO.findById(jsonNode.get("studentId").asInt()).get().getUserName();
+        String exerciseId = jsonNode.get("exerciseId").asText();
+        String labName = jsonNode.get("labName").asText();
+        String content = jsonNode.get("content").asText();
+
+        String fileName = userName + "_" + exerciseId;
+        new FileOperation().writeToFile(fileName, content);
+        ProcessBuilder processBuilder = new ProcessBuilder();
+        String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
+        String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
+        String sourcePath = System.getProperty("user.dir") + "/" + fileName;
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/Exercise", "-i", inventoryPath);
+        this.executeLinuxProcess.executeProcess(processBuilder);
+        new FileOperation().deleteFile(fileName);
+    }
+
+    public Execution retrieveSubmission(JsonNode jsonNode) {
+        String userName = studentOperationDAO.findById(jsonNode.get("studentId").asInt()).get().getUserName();
+        String exerciseId = jsonNode.get("exerciseId").asText();
+        String labName = jsonNode.get("labName").asText();
+
+        String fileName = userName + "_" + exerciseId;
+        Execution execution = new Execution();
+        execution.setCommand("cat " + fileName);
+        execution.setUserName("Exercise");
+        execution.setLabName(labName);
+        execution = executeCommand(execution);
+        return execution;
+    }
+
     private boolean isValid(String command) {
         HashSet<String> listOfValidCommands = new HashSet<>();
         for (ListOfValidCommands validcmd : ListOfValidCommands.values()) {
@@ -154,6 +189,22 @@ public class StudentOperationServiceUtil {
                 return false;
         }
 
+        return true;
+    }
+
+    public boolean completeExercise(JsonNode jsonNode) {
+        int studentId = jsonNode.get("studentId").asInt();
+        int exerciseId = jsonNode.get("exerciseId").asInt();
+
+        if (!studentOperationDAO.findById(studentId).isPresent() || !exerciseDAO.findById(exerciseId).isPresent())
+            return false;
+        Student student = studentOperationDAO.findById(studentId).get();
+        Exercise exercise = exerciseDAO.findById(exerciseId).get();
+
+        student.getExercisesCompleted().add(exercise);
+        student.getExercisesPending().remove(exercise);
+        studentOperationDAO.save(student);
+        saveSubmission(jsonNode);
         return true;
     }
 }

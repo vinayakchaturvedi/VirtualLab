@@ -1,6 +1,5 @@
 package com.example.virtuallab.bean;
 
-import com.example.virtuallab.service.ExecuteLinuxProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,16 +26,21 @@ public class Lab implements Cloneable {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "labs")
     private List<Student> students;
 
+    @OneToMany(mappedBy = "lab", cascade = CascadeType.ALL)
+    private List<Exercise> exercises;
+
     public Lab() {
         students = new ArrayList<>();
+        exercises = new ArrayList<>();
     }
 
-    public Lab(String labName, int studentsRegistered, Faculty faculty, List<Student> students) {
+    public Lab(String labName, int studentsRegistered, Faculty faculty, List<Student> students, List<Exercise> exercises) {
         this.labName = labName;
         this.studentsRegistered = studentsRegistered;
         this.faculty = faculty;
         this.students = students;
         this.creationDate = LocalDate.now();
+        this.exercises = exercises;
     }
 
     public int getLabId() {
@@ -87,6 +91,14 @@ public class Lab implements Cloneable {
         this.creationDate = creationDate;
     }
 
+    public List<Exercise> getExercises() {
+        return exercises;
+    }
+
+    public void setExercises(List<Exercise> exercises) {
+        this.exercises = exercises;
+    }
+
     @Override
     public String toString() {
         return "Lab{" +
@@ -107,10 +119,15 @@ public class Lab implements Cloneable {
         try {
             Lab clonedLab = (Lab) this.clone();
             clonedLab.students = null;
-            if (isNestingRequired)
+            clonedLab.exercises = new ArrayList<>();
+            if (isNestingRequired) {
                 clonedLab.faculty = faculty.shallowCopy(false);
-            else
+                for (Exercise exercise : exercises) {
+                    clonedLab.exercises.add(exercise.shallowCopy(false));
+                }
+            } else {
                 clonedLab.faculty = null;
+            }
             return clonedLab;
         } catch (CloneNotSupportedException e) {
             LOGGER.error(e.getLocalizedMessage());

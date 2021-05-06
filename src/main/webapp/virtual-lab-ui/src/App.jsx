@@ -10,6 +10,9 @@ import Login from "./components/login/login";
 import About from "./About";
 import Contact from "./Contact";
 import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
+import CreateExercise from "./views/CreateExercise";
+import SubmitExercise from "./views/Dashboard/SubmitExercise";
+import CheckSubmission from "./views/Dashboard/CheckSubmission";
 
 class App extends React.Component {
 
@@ -41,6 +44,12 @@ class App extends React.Component {
                         <Route path="/About" component={About}>
                         </Route>
                         <Route path="/Contact" component={Contact}>
+                        </Route>
+                        <Route path="/CreateExercise" component={CreateExercise}>
+                        </Route>
+                        <Route path="/SubmitExercise" component={SubmitExercise}>
+                        </Route>
+                        <Route path="/CheckSubmission" component={CheckSubmission}>
                         </Route>
                     </Switch>
                 </Router>

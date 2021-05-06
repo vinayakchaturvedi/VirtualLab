@@ -1,6 +1,7 @@
 package com.example.virtuallab.controller;
 
 import com.example.virtuallab.bean.Execution;
+import com.example.virtuallab.bean.Exercise;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.bean.Student;
 import com.example.virtuallab.dao.CommandExecutionDAO;
@@ -226,12 +227,53 @@ public class StudentOperationController {
     public ResponseEntity<List<Execution>> getExecution(@PathVariable String userName) {
         List<Execution> response = new ArrayList<>();
         List<Execution> all = commandExecutionDAO.findAll(Sort.by(Sort.Direction.DESC, "time"));
-        for (int i = 0; i < Math.min(5, all.size()); i++) {
+        for (int i = 0; i < all.size() && response.size() < 5; i++) {
             Execution execution = all.get(i);
             if (execution.getUserName().equals(userName)) {
                 response.add(execution);
             }
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/completeExercise")
+    public ResponseEntity<String> completeExercise(@RequestBody JsonNode jsonNode) {
+        if (studentOperationServiceUtil.completeExercise(jsonNode))
+            return new ResponseEntity<>("Successfully complete", HttpStatus.OK);
+        return new ResponseEntity<>("Error while saving", HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/retrieveSubmission")
+    public ResponseEntity<Execution> retrieveSubmission(@RequestBody JsonNode jsonNode) {
+        Execution execution = studentOperationServiceUtil.retrieveSubmission(jsonNode);
+        if (execution != null)
+            return new ResponseEntity<>(execution, HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/getCompletedExercise/{userName}")
+    public ResponseEntity<List<Exercise>> getCompletedExercise(@PathVariable String userName) {
+        List<Exercise> res = new ArrayList<>();
+        Iterable<Student> all = studentOperationDAO.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student;
+        });
+        response[0].getExercisesCompleted().forEach(exercise -> res.add(exercise.shallowCopy(true)));
+        return new ResponseEntity<>(res, HttpStatus.OK);
+    }
+
+    @GetMapping("/getPendingExercise/{userName}")
+    public ResponseEntity<List<Exercise>> getPendingExercise(@PathVariable String userName) {
+        List<Exercise> res = new ArrayList<>();
+        Iterable<Student> all = studentOperationDAO.findAll();
+        final Student[] response = {null};
+        all.forEach(student -> {
+            if (student.getUserName().equals(userName))
+                response[0] = student;
+        });
+        response[0].getExercisesPending().forEach(exercise -> res.add(exercise.shallowCopy(true)));
+        return new ResponseEntity<>(res, HttpStatus.OK);
     }
 }

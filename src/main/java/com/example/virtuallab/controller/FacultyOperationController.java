@@ -1,12 +1,13 @@
 package com.example.virtuallab.controller;
 
 import com.example.virtuallab.bean.Execution;
+import com.example.virtuallab.bean.Exercise;
 import com.example.virtuallab.bean.Faculty;
 import com.example.virtuallab.bean.Lab;
 import com.example.virtuallab.dao.CommandExecutionDAO;
 import com.example.virtuallab.dao.FacultyOperationDAO;
-import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.example.virtuallab.dao.LabOperationDAO;
+import com.example.virtuallab.service.FacultyOperationServiceUtil;
 import com.example.virtuallab.utils.Constants;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -150,5 +151,20 @@ public class FacultyOperationController {
     public ResponseEntity<List<Execution>> getExecutionSummary() {
         List<Execution> all = commandExecutionDAO.findAll();
         return new ResponseEntity<>(all, HttpStatus.OK);
+    }
+
+    @PostMapping("/createExercise")
+    public ResponseEntity<String> createExercise(@RequestBody JsonNode jsonNode) {
+        if (util.createExercise(jsonNode))
+            return new ResponseEntity<>("Successfully created the exercise", HttpStatus.OK);
+        return new ResponseEntity<>("Error while creating exercise", HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/getAllExerciseByLabName/{labName}")
+    public ResponseEntity<List<Exercise>> getAllExerciseByLabName(@PathVariable String labName) {
+        List<Exercise> response = util.getAllExerciseByLabName(labName);
+        if (response == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 }

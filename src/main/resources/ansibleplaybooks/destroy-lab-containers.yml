@@ -1,0 +1,15 @@
+---
+- name: Destroy lab containers
+  hosts: Institution_Host
+  vars:
+    labName: "{{ labName }}"
+
+  tasks:
+    - name: Stop Container
+      shell:
+        cmd: docker stop {{labName}}
+      ignore_errors: yes
+    - name: Remove container
+      shell:
+        cmd: docker rm {{labName}}
+      ignore_errors: yes
