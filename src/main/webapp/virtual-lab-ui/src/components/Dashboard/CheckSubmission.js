@@ -18,6 +18,12 @@ class CheckSubmission extends Component {
 
     componentDidMount() {
         if (this.state.student === undefined) {
+            if (localStorage.getItem('student') === null) {
+                this.props.history.push({
+                    pathname: '/ErrorPage',
+                });
+            }
+
             this.setState({
                 student: JSON.parse(localStorage.getItem('student')),
                 exercise: JSON.parse(localStorage.getItem('exercise')),
@@ -70,6 +76,10 @@ class CheckSubmission extends Component {
     }
 
     async submit() {
+        localStorage.removeItem('student');
+        localStorage.removeItem('exercise');
+        localStorage.removeItem('labName');
+
         this.props.history.push({
             pathname: '/dashboard',
             state: {student: this.state.student}

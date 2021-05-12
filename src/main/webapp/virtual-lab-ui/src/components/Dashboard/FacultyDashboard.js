@@ -22,6 +22,7 @@ import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
 import Table from "../Table/Table";
+import ErrorPage from "./ErrorPage";
 
 let ps;
 
@@ -29,7 +30,11 @@ const useStyles = makeStyles(styles);
 
 export default function FacultyDashboard({...rest}) {
 
-    console.log("rest: ", rest);
+    if (rest.history.location.state === undefined) {
+        return <div>
+            <ErrorPage/>
+        </div>;
+    }
     const classes = useStyles();
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState('');

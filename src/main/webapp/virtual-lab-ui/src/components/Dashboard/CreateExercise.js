@@ -10,6 +10,7 @@ import Paper from '@material-ui/core/Paper';
 import {Input} from "@material-ui/core";
 import plus_sign from "../../plus_sign.png";
 import Button from "../CustomButtons/Button";
+import ErrorPage from "./ErrorPage";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {
@@ -45,7 +46,11 @@ const useStyles = makeStyles({
 
 export default function CreateExercise({...rest}) {
     const classes = useStyles();
-    console.log("CreateExercise: ", rest)
+    if (rest.history.location.state === undefined) {
+        return <div>
+            <ErrorPage/>
+        </div>;
+    }
     const [lab, setLab] = useState(rest.history.location.state.lab);
     const [faculty, setFaculty] = useState(rest.history.location.state.faculty);
 

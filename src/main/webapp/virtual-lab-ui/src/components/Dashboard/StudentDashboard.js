@@ -27,6 +27,7 @@ import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
 import CardBody from "../Card/CardBody";
 import plus_sign from "../../plus_sign.png";
 import PopUp from "./PopUp";
+import ErrorPage from "./ErrorPage";
 
 
 let ps;
@@ -35,8 +36,11 @@ const useStyles = makeStyles(styles);
 
 export default function StudentDashboard({...rest}) {
 
-
-    console.log("student: ", rest.history.location.state.student)
+    if (rest.history.location.state === undefined) {
+        return <div>
+            <ErrorPage/>
+        </div>;
+    }
     const classes = useStyles();
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);

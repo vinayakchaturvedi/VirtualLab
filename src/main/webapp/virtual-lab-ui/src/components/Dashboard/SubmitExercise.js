@@ -18,6 +18,13 @@ class SubmitExercise extends Component {
 
     componentDidMount() {
         if (this.state.student === undefined) {
+
+            if (localStorage.getItem('student') === null) {
+                this.props.history.push({
+                    pathname: '/ErrorPage',
+                });
+            }
+
             this.setState({
                 student: JSON.parse(localStorage.getItem('student')),
                 exercise: JSON.parse(localStorage.getItem('exercise')),
@@ -62,6 +69,9 @@ class SubmitExercise extends Component {
         if (response.status === 200) {
             let result = await response.text();
             console.log("Complete exercise response: ", result)
+            localStorage.removeItem('student');
+            localStorage.removeItem('exercise');
+            localStorage.removeItem('labName');
             this.props.history.push({
                 pathname: '/dashboard',
                 state: {student: this.state.student}

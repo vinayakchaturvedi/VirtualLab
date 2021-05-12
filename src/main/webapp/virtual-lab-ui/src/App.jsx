@@ -11,6 +11,7 @@ import FacultyDashboard from "./components/Dashboard/FacultyDashboard";
 import CreateExercise from "./components/Dashboard/CreateExercise";
 import SubmitExercise from "./components/Dashboard/SubmitExercise";
 import CheckSubmission from "./components/Dashboard/CheckSubmission";
+import ErrorPage from "./components/Dashboard/ErrorPage";
 
 class App extends React.Component {
 
@@ -44,6 +45,8 @@ class App extends React.Component {
                         <Route path="/SubmitExercise" component={SubmitExercise}>
                         </Route>
                         <Route path="/CheckSubmission" component={CheckSubmission}>
+                        </Route>
+                        <Route path="/ErrorPage" component={ErrorPage}>
                         </Route>
                     </Switch>
                 </Router>
