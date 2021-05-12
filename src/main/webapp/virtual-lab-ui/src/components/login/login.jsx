@@ -43,6 +43,9 @@ class Login extends React.Component {
                     state: {student: result}
                 })
             }
+            else {
+                alert("Invalid Credentials");
+            }
         } else if (document.getElementById("facultyLogin").checked === true) {
             console.log("Verifying faculty");
             //API Call to get faculty ID for loginHook verification
@@ -64,6 +67,9 @@ class Login extends React.Component {
                     pathname: '/facultyDashboard',
                     state: {faculty: result}
                 })
+            }
+            else {
+                alert("Invalid Credentials");
             }
         } else {
             alert("select type of Login");
