@@ -81,7 +81,7 @@ class CheckSubmission extends Component {
         localStorage.removeItem('labName');
 
         this.props.history.push({
-            pathname: '/dashboard',
+            pathname: '/studentDashboard',
             state: {student: this.state.student}
         })
     }

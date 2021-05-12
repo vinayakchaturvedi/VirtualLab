@@ -73,7 +73,7 @@ class SubmitExercise extends Component {
             localStorage.removeItem('exercise');
             localStorage.removeItem('labName');
             this.props.history.push({
-                pathname: '/dashboard',
+                pathname: '/studentDashboard',
                 state: {student: this.state.student}
             })
         } else {
