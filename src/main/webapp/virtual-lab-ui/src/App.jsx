@@ -3,8 +3,6 @@ import "./App.scss";
 import IndexPanel from "./IndexPanel";
 import StudentTerminal from "./StudentTerminal.jsx";
 import {BrowserRouter as Router, Link, NavLink, Route, Switch} from "react-router-dom";
-import Admin from "./layouts/Admin";
-import RTL from "./layouts/RTL";
 import Dashboard from "./views/Dashboard/Dashboard";
 import Login from "./components/login/login";
 import About from "./About";
@@ -31,11 +29,7 @@ class App extends React.Component {
                         </Route>
                         <Route path="/StudentTerminal" component={StudentTerminal}>
                         </Route>
-                        <Route path="/rtl" component={RTL}>
-                        </Route>
                         <Route path="/login" component={Login}>
-                        </Route>
-                        <Route path="/admin" component={Admin}>
                         </Route>
                         <Route path="/dashboard" component={Dashboard}>
                         </Route>
