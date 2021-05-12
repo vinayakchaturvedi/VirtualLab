@@ -1,29 +1,33 @@
 import React, {useState} from "react";
+
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
-import Table from "components/Table/Table.js";
+import Table from "../Table/Table.js";
 import Store from "@material-ui/icons/Store";
 import BugReport from "@material-ui/icons/BugReport";
 import Code from "@material-ui/icons/Code";
 import Cloud from "@material-ui/icons/Cloud";
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardIcon from "components/Card/CardIcon.js";
+
+import GridItem from "../Grid/GridItem";
+import GridContainer from "../Grid/GridContainer.js";
+import CustomTabs from "../CustomTabs/CustomTabs.js";
+import Card from "../Card/Card.js";
+import CardHeader from "../Card/CardHeader.js";
+import CardIcon from "../Card/CardIcon.js";
+
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-import Sidebar from "components/Sidebar/Sidebar.js";
+import Sidebar from "../Sidebar/Sidebar.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import Button from "../../components/CustomButtons/Button";
+import Button from "../CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
-import CardBody from "../../components/Card/CardBody";
+import CardBody from "../Card/CardBody";
 import plus_sign from "../../plus_sign.png";
 import PopUp from "./PopUp";
+
 
 let ps;
 

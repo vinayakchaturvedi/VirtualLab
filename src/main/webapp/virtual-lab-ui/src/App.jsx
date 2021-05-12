@@ -3,14 +3,14 @@ import "./App.scss";
 import IndexPanel from "./IndexPanel";
 import StudentTerminal from "./StudentTerminal.jsx";
 import {BrowserRouter as Router, Link, NavLink, Route, Switch} from "react-router-dom";
-import StudentDashboard from "./views/Dashboard/StudentDashboard";
+import StudentDashboard from "./components/Dashboard/StudentDashboard";
 import Login from "./components/login/login";
 import About from "./About";
 import Contact from "./Contact";
-import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
-import SubmitExercise from "./views/Dashboard/SubmitExercise";
-import CheckSubmission from "./views/Dashboard/CheckSubmission";
-import CreateExercise from "./views/Dashboard/CreateExercise";
+import FacultyDashboard from "./components/Dashboard/FacultyDashboard";
+import CreateExercise from "./components/Dashboard/CreateExercise";
+import SubmitExercise from "./components/Dashboard/SubmitExercise";
+import CheckSubmission from "./components/Dashboard/CheckSubmission";
 
 class App extends React.Component {
 

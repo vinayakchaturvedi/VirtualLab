@@ -1,46 +1,27 @@
 import React, {useState} from "react";
 import {Chart} from "react-chartjs-2";
-// react plugin for creating charts
-// import ChartistGraph from "react-chartist";
-// @material-ui/core
-// @material-ui/core components
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
-// import LocalOffer from "@material-ui/icons/LocalOffer";
-// import Update from "@material-ui/icons/Update";
-// import ArrowUpward from "@material-ui/icons/ArrowUpward";
-// import AccessTime from "@material-ui/icons/AccessTime";
-// import Accessibility from "@material-ui/icons/Accessibility";
 import BugReport from "@material-ui/icons/BugReport";
-// core components
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-// import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardIcon from "components/Card/CardIcon.js";
-// creates a beautiful scrollbar
+// core ..
+import GridItem from "../Grid/GridItem.js";
+import GridContainer from "../Grid/GridContainer.js";
+import CustomTabs from "../CustomTabs/CustomTabs.js";
+import Card from "../Card/Card.js";
+import CardHeader from "../Card/CardHeader.js";
+import CardIcon from "../Card/CardIcon.js";
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-// core components
-import Sidebar from "components/Sidebar/Sidebar.js";
-// import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
+import Sidebar from "../Sidebar/Sidebar.js";
 import "assets/css/material-dashboard-react.css?v=1.9.0";
-// import { cpp, java, python } from "variables/general.js";
-// import {
-//   dailySalesChart,
-//   emailsSubscriptionChart,
-//   completedTasksChart
-// } from "variables/charts.js";
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import Button from "../../components/CustomButtons/Button";
+import Button from "../CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
-import Table from "../../components/Table/Table";
+import Table from "../Table/Table";
 
 let ps;
 
@@ -312,19 +293,6 @@ export default function FacultyDashboard({...rest}) {
     const [color, setColor] = React.useState("blue");
     // const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    // const handleImageClick = image => {
-    //   setImage(image);
-    // };
-    // const handleColorClick = color => {
-    //   setColor(color);
-    // };
-    // const handleFixedClick = () => {
-    //   if (fixedClasses === "dropdown") {
-    //     setFixedClasses("dropdown show");
-    //   } else {
-    //     setFixedClasses("dropdown");
-    //   }
-    // };
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
