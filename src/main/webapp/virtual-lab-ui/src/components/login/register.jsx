@@ -45,7 +45,7 @@ class Register extends React.Component {
                 let student = await response.json();
                 console.log("Successfully registered the student: ", student);
                 this.props.history.push({
-                    pathname: '/dashboard',
+                    pathname: '/studentDashboard',
                     state: {student: student}
                 })
             } else {
