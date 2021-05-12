@@ -14,4 +14,4 @@ ENV SHARE_DIR /usr/local/share
 WORKDIR .
 # copy jar file and resource modules
 COPY ./target/virtuallab-0.0.1-SNAPSHOT.jar ./
-COPY ./src/main/resources/ ./src/main/resources
+COPY ./src/main/resources/ ./src/main/resources/

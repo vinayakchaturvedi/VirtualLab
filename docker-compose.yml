@@ -33,10 +33,9 @@ services:
     restart: always
     depends_on:
       - db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/VirtualLab?createDatabaseIfNotExist=true
-      SPRING_DATASOURCE_USERNAME: VirtualLab
-      SPRING_DATASOURCE_PASSWORD: VirtualLabPass
+      - mongodb
+    links:
+      - mongodb:mongodb
     networks:
       - fullstack-application-network
     container_name: backend
@@ -48,7 +47,7 @@ services:
       - "3306:3306"
     restart: always
     depends_on:
-      - instituitionserver
+      - mongodb
     environment:
       MYSQL_DATABASE: VirtualLab
       MYSQL_USER: VirtualLab
@@ -60,8 +59,21 @@ services:
       - fullstack-application-network
     container_name: db
 
+  mongodb:
+    image: rushikesh0203/virtuallab_mongodb:latest
+    ports:
+    - "27017:27017"
+    depends_on:
+      - instituitionserver
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - fullstack-application-network
+    container_name: mongodb
+
+
   instituitionserver:
-    image: rushikesh0203/virtuallab_server:latest
+    image: rushikesh0203/institutionserver:latest
     command:
       - /bin/bash
       - -c
@@ -80,6 +92,7 @@ services:
 
 volumes:
   db-data:
+  mongo-data:
 
 networks:
   fullstack-application-network:

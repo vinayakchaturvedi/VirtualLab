@@ -15,4 +15,5 @@ RUN npm run build
 FROM nginx:1.12-alpine
 COPY --from=frontend-build ./frontend/build /usr/share/nginx/html
 EXPOSE 80
+COPY ./src/main/webapp/virtual-lab-ui/nginx.conf /etc/nginx/conf.d/default.conf
 CMD ["nginx", "-g", "daemon off;"]
