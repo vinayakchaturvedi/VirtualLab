@@ -8,9 +8,9 @@ import Login from "./components/login/login";
 import About from "./About";
 import Contact from "./Contact";
 import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
-import CreateExercise from "./views/CreateExercise";
 import SubmitExercise from "./views/Dashboard/SubmitExercise";
 import CheckSubmission from "./views/Dashboard/CheckSubmission";
+import CreateExercise from "./views/Dashboard/CreateExercise";
 
 class App extends React.Component {
 
