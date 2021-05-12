@@ -18,4 +18,4 @@
     - name: Save output to a file
       copy:
         content: "{{ shell_result }}"
-        dest: "./output.json"
+        dest: "{{ playbook_dir }}/output.json"

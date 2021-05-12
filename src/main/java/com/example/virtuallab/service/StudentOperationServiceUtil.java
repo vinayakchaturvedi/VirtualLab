@@ -102,7 +102,7 @@ public class StudentOperationServiceUtil {
         command = "'" + command + "'";
         processBuilder.command("/usr/bin/ansible-playbook", ansibleFilePath, "-e", "labName=" + labName + " command=" + command, "-i", inventoryPath);
         this.executeLinuxProcess.executeProcess(processBuilder);
-        new FileOperation().readJsonFile("/home/vinayak/output.json", execution);
+        new FileOperation().readJsonFile(System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/output.json", execution);
         if (Constants.commandToStore.contains(linuxCommand)) {
             storeExecutionToMongoDB(execution);
         }
