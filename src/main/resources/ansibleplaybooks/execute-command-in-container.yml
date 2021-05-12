@@ -18,4 +18,9 @@
     - name: Save output to a file
       copy:
         content: "{{ shell_result }}"
-        dest: "{{ playbook_dir }}/output.json"
+        dest: "output.json"
+    - name: Copy output file
+      fetch:
+        src: /home/virtuallab/output.json
+        dest: "{{ playbook_dir }}/"
+        flat: yes
