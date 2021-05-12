@@ -8,8 +8,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import {Input} from "@material-ui/core";
-import plus_sign from "../plus_sign.png";
-import Button from "../components/CustomButtons/Button";
+import plus_sign from "../../plus_sign.png";
+import Button from "../CustomButtons/Button";
 
 const StyledTableCell = withStyles((theme) => ({
     head: {

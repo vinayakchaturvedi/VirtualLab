@@ -3,16 +3,14 @@ import "./App.scss";
 import IndexPanel from "./IndexPanel";
 import StudentTerminal from "./StudentTerminal.jsx";
 import {BrowserRouter as Router, Link, NavLink, Route, Switch} from "react-router-dom";
-import Admin from "./layouts/Admin";
-import RTL from "./layouts/RTL";
-import Dashboard from "./views/Dashboard/Dashboard";
+import StudentDashboard from "./components/Dashboard/StudentDashboard";
 import Login from "./components/login/login";
 import About from "./About";
 import Contact from "./Contact";
-import FacultyDashboard from "./views/Dashboard/FacultyDashboard";
-import CreateExercise from "./views/CreateExercise";
-import SubmitExercise from "./views/Dashboard/SubmitExercise";
-import CheckSubmission from "./views/Dashboard/CheckSubmission";
+import FacultyDashboard from "./components/Dashboard/FacultyDashboard";
+import CreateExercise from "./components/Dashboard/CreateExercise";
+import SubmitExercise from "./components/Dashboard/SubmitExercise";
+import CheckSubmission from "./components/Dashboard/CheckSubmission";
 
 class App extends React.Component {
 
@@ -31,13 +29,9 @@ class App extends React.Component {
                         </Route>
                         <Route path="/StudentTerminal" component={StudentTerminal}>
                         </Route>
-                        <Route path="/rtl" component={RTL}>
-                        </Route>
                         <Route path="/login" component={Login}>
                         </Route>
-                        <Route path="/admin" component={Admin}>
-                        </Route>
-                        <Route path="/dashboard" component={Dashboard}>
+                        <Route path="/studentDashboard" component={StudentDashboard}>
                         </Route>
                         <Route path="/facultyDashboard" component={FacultyDashboard}>
                         </Route>

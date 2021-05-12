@@ -1,56 +1,39 @@
 import React, {useState} from "react";
-// react plugin for creating charts
-// import ChartistGraph from "react-chartist";
-// @material-ui/core
-// @material-ui/core components
+
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
-import Table from "components/Table/Table.js";
-// @material-ui/icons
+import Table from "../Table/Table.js";
 import Store from "@material-ui/icons/Store";
-// import LocalOffer from "@material-ui/icons/LocalOffer";
-// import Update from "@material-ui/icons/Update";
-// import ArrowUpward from "@material-ui/icons/ArrowUpward";
-// import AccessTime from "@material-ui/icons/AccessTime";
-// import Accessibility from "@material-ui/icons/Accessibility";
 import BugReport from "@material-ui/icons/BugReport";
 import Code from "@material-ui/icons/Code";
 import Cloud from "@material-ui/icons/Cloud";
-// core components
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-// import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardIcon from "components/Card/CardIcon.js";
-// creates a beautiful scrollbar
+
+import GridItem from "../Grid/GridItem";
+import GridContainer from "../Grid/GridContainer.js";
+import CustomTabs from "../CustomTabs/CustomTabs.js";
+import Card from "../Card/Card.js";
+import CardHeader from "../Card/CardHeader.js";
+import CardIcon from "../Card/CardIcon.js";
+
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-// core components
-import Sidebar from "components/Sidebar/Sidebar.js";
-// import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-import "assets/css/material-dashboard-react.css?v=1.9.0";
-// import { cpp, java, python } from "variables/general.js";
-// import {
-//   dailySalesChart,
-//   emailsSubscriptionChart,
-//   completedTasksChart
-// } from "variables/charts.js";
-import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import Button from "../../components/CustomButtons/Button";
+import Sidebar from "../Sidebar/Sidebar.js";
+import "../../assets/css/material-dashboard-react.css?v=1.9.0";
+import styles from "../../assets/jss/material-dashboard-react/views/dashboardStyle.js";
+import Button from "../CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
-import CardBody from "../../components/Card/CardBody";
+import CardBody from "../Card/CardBody";
 import plus_sign from "../../plus_sign.png";
 import PopUp from "./PopUp";
+
 
 let ps;
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard({...rest}) {
+export default function StudentDashboard({...rest}) {
 
 
     console.log("student: ", rest.history.location.state.student)
@@ -58,7 +41,7 @@ export default function Dashboard({...rest}) {
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);
 
-    const [cppLabDesc, setCppLabDesc] = useState(undefined);
+    const [c_langLabDesc, setc_langLabDesc] = useState(undefined);
     const [javaLabDesc, setJavaLabDesc] = useState(undefined);
     const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
     const [student, setStudent] = useState(rest.history.location.state.student)
@@ -360,7 +343,7 @@ export default function Dashboard({...rest}) {
             })
             .catch(error => console.log(error));
         fetch(
-            'http://localhost:8700/getLabByLabName/cpp/', {
+            'http://localhost:8700/getLabByLabName/c_lang/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -370,31 +353,15 @@ export default function Dashboard({...rest}) {
         )
             .then(res => res.json())
             .then(response => {
-                setCppLabDesc(response)
+                setc_langLabDesc(response)
             })
             .catch(error => console.log(error));
     });
 
-    // ref to help us initialize PerfectScrollbar on windows devices
     const mainPanel = React.createRef();
-    // states and functions
     const [image, setImage] = React.useState(bgImage);
     const [color, setColor] = React.useState("blue");
-    // const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    // const handleImageClick = image => {
-    //   setImage(image);
-    // };
-    // const handleColorClick = color => {
-    //   setColor(color);
-    // };
-    // const handleFixedClick = () => {
-    //   if (fixedClasses === "dropdown") {
-    //     setFixedClasses("dropdown show");
-    //   } else {
-    //     setFixedClasses("dropdown");
-    //   }
-    // };
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
@@ -428,12 +395,6 @@ export default function Dashboard({...rest}) {
     let togglePop = () => {
         setSeen(!seen)
     };
-
-    /*if (seen) {
-        return (
-            <PopUp toggle={togglePop}/>
-        )
-    }*/
 
     return (
         <div className={classes.wrapper}>
@@ -485,7 +446,7 @@ export default function Dashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
@@ -535,7 +496,7 @@ export default function Dashboard({...rest}) {
                                                         <h4>{registrationMessage}</h4>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: c_langLabDesc === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -543,10 +504,10 @@ export default function Dashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.faculty.facultyName}</p>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: c_langLabDesc === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -554,7 +515,7 @@ export default function Dashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.creationDate}</p>
                                                     </div>
                                                 </div>
                                             )
@@ -721,12 +682,12 @@ export default function Dashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: completedExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        style={{display: completedExercise.c_lang.length === 0 && c_langLabDesc !== undefined ? "block" : "none"}}>
                                                         <h4>No submissions yet</h4></div>
                                                     <div
                                                         style={{display: completedExercise.c_lang.length === 0 ? "none" : "block"}}>
@@ -789,12 +750,12 @@ export default function Dashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: pendingExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        style={{display: pendingExercise.c_lang.length === 0 && c_langLabDesc !== undefined ? "block" : "none"}}>
                                                         <h4>No pending Exercise</h4></div>
                                                     <div
                                                         style={{display: pendingExercise.c_lang.length === 0 ? "none" : "block"}}>

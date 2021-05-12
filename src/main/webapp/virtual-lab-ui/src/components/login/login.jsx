@@ -1,10 +1,8 @@
 import React from "react";
-// import loginImg from "../../loginHook.svg";
 import imglog from "../../llo.png";
 import "./style.scss";
 import {withRouter} from 'react-router-dom';
 
-// import { Redirect } from "react-router-dom";
 
 class Login extends React.Component {
 
@@ -41,7 +39,7 @@ class Login extends React.Component {
                 let result = await response.json();
                 console.log(result);
                 this.props.history.push({
-                    pathname: '/dashboard',
+                    pathname: '/studentDashboard',
                     state: {student: result}
                 })
             }

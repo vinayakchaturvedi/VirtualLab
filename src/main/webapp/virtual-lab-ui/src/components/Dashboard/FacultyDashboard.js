@@ -1,46 +1,27 @@
 import React, {useState} from "react";
 import {Chart} from "react-chartjs-2";
-// react plugin for creating charts
-// import ChartistGraph from "react-chartist";
-// @material-ui/core
-// @material-ui/core components
 import {makeStyles} from "@material-ui/core/styles";
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
-// import LocalOffer from "@material-ui/icons/LocalOffer";
-// import Update from "@material-ui/icons/Update";
-// import ArrowUpward from "@material-ui/icons/ArrowUpward";
-// import AccessTime from "@material-ui/icons/AccessTime";
-// import Accessibility from "@material-ui/icons/Accessibility";
 import BugReport from "@material-ui/icons/BugReport";
-// core components
-import GridItem from "components/Grid/GridItem.js";
-import GridContainer from "components/Grid/GridContainer.js";
-// import Tasks from "components/Tasks/Tasks.js";
-import CustomTabs from "components/CustomTabs/CustomTabs.js";
-import Card from "components/Card/Card.js";
-import CardHeader from "components/Card/CardHeader.js";
-import CardIcon from "components/Card/CardIcon.js";
-// creates a beautiful scrollbar
+// core ..
+import GridItem from "../Grid/GridItem.js";
+import GridContainer from "../Grid/GridContainer.js";
+import CustomTabs from "../CustomTabs/CustomTabs.js";
+import Card from "../Card/Card.js";
+import CardHeader from "../Card/CardHeader.js";
+import CardIcon from "../Card/CardIcon.js";
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
-// core components
-import Sidebar from "components/Sidebar/Sidebar.js";
-// import FixedPlugin from "components/FixedPlugin/FixedPlugin.js";
-import "assets/css/material-dashboard-react.css?v=1.9.0";
-// import { cpp, java, python } from "variables/general.js";
-// import {
-//   dailySalesChart,
-//   emailsSubscriptionChart,
-//   completedTasksChart
-// } from "variables/charts.js";
-import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
-import Button from "../../components/CustomButtons/Button";
+import Sidebar from "../Sidebar/Sidebar.js";
+import "../../assets/css/material-dashboard-react.css?v=1.9.0";
+import styles from "../../assets/jss/material-dashboard-react/views/dashboardStyle.js";
+import Button from "../CustomButtons/Button";
 import routes from "../../routes";
 import logo from "../../assets/img/reactlogo.png";
 import bgImage from "../../assets/img/iiitb-sidebar2.jpg";
-import Table from "../../components/Table/Table";
+import Table from "../Table/Table";
 
 let ps;
 
@@ -61,7 +42,7 @@ export default function FacultyDashboard({...rest}) {
     const [nonCreatedLabs, setNotCreatedLabs] = useState({});
     const [creationMessage, setCreationMessage] = useState("")
     const [executionSummary, setExecutionSummary] = useState({})
-    const [labels, setLabels] = useState(["Java", "Python"]);
+    const [labels, setLabels] = useState([]);
     const [exercises, setExercises] = useState({"java": undefined, "python": undefined, "c_lang": undefined});
     const [exerciseSummary, setExerciseSummary] = useState({"java": [], "python": [], "c_lang": []})
 
@@ -193,18 +174,28 @@ export default function FacultyDashboard({...rest}) {
             .then(res => res.json())
             .then(response => {
                 let javaSCount = 0, pythonSCount = 0, cLangSCount = 0;
-                let javaFCount = 0, pythonFCount = 0, cLangFCount = 0
+                let javaFCount = 0, pythonFCount = 0, cLangFCount = 0;
+                let labelTemp = [];
                 response.forEach(execution => {
                     if (execution.labName === "java") {
                         if (execution.successfulExecution) javaSCount++;
                         else javaFCount++;
+                        if(labelTemp.indexOf("Java") === -1){
+                            labelTemp.push("Java")
+                        }
                     } else if (execution.labName === "python") {
                         if (execution.successfulExecution) pythonSCount++;
                         else pythonFCount++;
+                        if(labelTemp.indexOf("Python") === -1){
+                            labelTemp.push("Python")
+                        }
                     }
                     if (execution.labName === "c_lang") {
                         if (execution.successfulExecution) cLangSCount++;
                         else cLangFCount++;
+                        if(labelTemp.indexOf("C Language") === -1){
+                            labelTemp.push("C Language")
+                        }
                     }
                 })
                 let executionSummaryTemp = {};
@@ -221,6 +212,7 @@ export default function FacultyDashboard({...rest}) {
                     FCount: cLangFCount
                 }
                 setExecutionSummary(executionSummaryTemp)
+                setLabels(labelTemp)
             })
             .catch(error => console.log(error));
 
@@ -312,19 +304,6 @@ export default function FacultyDashboard({...rest}) {
     const [color, setColor] = React.useState("blue");
     // const [fixedClasses, setFixedClasses] = React.useState("dropdown show");
     const [mobileOpen, setMobileOpen] = React.useState(false);
-    // const handleImageClick = image => {
-    //   setImage(image);
-    // };
-    // const handleColorClick = color => {
-    //   setColor(color);
-    // };
-    // const handleFixedClick = () => {
-    //   if (fixedClasses === "dropdown") {
-    //     setFixedClasses("dropdown show");
-    //   } else {
-    //     setFixedClasses("dropdown");
-    //   }
-    // };
     const handleDrawerToggle = () => {
         setMobileOpen(!mobileOpen);
     };
