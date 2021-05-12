@@ -166,7 +166,7 @@ class StudentTerminal extends Component {
                         <label className="logo">Virtual Lab</label>
                         <ul>
                             <li><Link to={{
-                                pathname: '/dashboard',
+                                pathname: '/studentDashboard',
                                 state: {student: this.state.student}
                             }}>Home</Link></li>
                             <li><Link to="/About">About</Link></li>

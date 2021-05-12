@@ -29,7 +29,7 @@ let ps;
 
 const useStyles = makeStyles(styles);
 
-export default function Dashboard({...rest}) {
+export default function StudentDashboard({...rest}) {
 
 
     console.log("student: ", rest.history.location.state.student)

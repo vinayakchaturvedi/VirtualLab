@@ -1,5 +1,5 @@
 import LibraryBooks from "@material-ui/icons/LibraryBooks";
-import DashboardPage from "views/Dashboard/Dashboard.js";
+import DashboardPage from "views/Dashboard/StudentDashboard";
 import Person from "@material-ui/icons/Person";
 
 const dashboardRoutes = [
