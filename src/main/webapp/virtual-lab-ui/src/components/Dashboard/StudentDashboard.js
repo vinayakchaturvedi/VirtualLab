@@ -41,7 +41,7 @@ export default function StudentDashboard({...rest}) {
     const [size, setSize] = useState('');
     const [numberOfLabs, setNumberOfLabs] = useState(rest.history.location.state.student.labs.length);
 
-    const [cppLabDesc, setCppLabDesc] = useState(undefined);
+    const [c_langLabDesc, setc_langLabDesc] = useState(undefined);
     const [javaLabDesc, setJavaLabDesc] = useState(undefined);
     const [pythonLabDesc, setPythonLabDesc] = useState(undefined);
     const [student, setStudent] = useState(rest.history.location.state.student)
@@ -343,7 +343,7 @@ export default function StudentDashboard({...rest}) {
             })
             .catch(error => console.log(error));
         fetch(
-            'http://localhost:8700/getLabByLabName/cpp/', {
+            'http://localhost:8700/getLabByLabName/c_lang/', {
                 method: "GET",
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
@@ -353,7 +353,7 @@ export default function StudentDashboard({...rest}) {
         )
             .then(res => res.json())
             .then(response => {
-                setCppLabDesc(response)
+                setc_langLabDesc(response)
             })
             .catch(error => console.log(error));
     });
@@ -446,7 +446,7 @@ export default function StudentDashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
@@ -496,7 +496,7 @@ export default function StudentDashboard({...rest}) {
                                                         <h4>{registrationMessage}</h4>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: c_langLabDesc === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -504,10 +504,10 @@ export default function StudentDashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.faculty.facultyName}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.faculty.facultyName}</p>
                                                     </div>
                                                     <div
-                                                        style={{display: cppLabDesc === undefined ? "none" : "block"}}>
+                                                        style={{display: c_langLabDesc === undefined ? "none" : "block"}}>
                                                         <p style={{
                                                             display: "inline-block", fontSize: "200%",
                                                             color: "#a38282", padding: "2%"
@@ -515,7 +515,7 @@ export default function StudentDashboard({...rest}) {
                                                         <p style={{
                                                             display: "inline-block", fontSize: "180%",
                                                             padding: "2%"
-                                                        }}>{cppLabDesc === undefined ? "" : cppLabDesc.creationDate}</p>
+                                                        }}>{c_langLabDesc === undefined ? "" : c_langLabDesc.creationDate}</p>
                                                     </div>
                                                 </div>
                                             )
@@ -682,12 +682,12 @@ export default function StudentDashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: completedExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        style={{display: completedExercise.c_lang.length === 0 && c_langLabDesc !== undefined ? "block" : "none"}}>
                                                         <h4>No submissions yet</h4></div>
                                                     <div
                                                         style={{display: completedExercise.c_lang.length === 0 ? "none" : "block"}}>
@@ -750,12 +750,12 @@ export default function StudentDashboard({...rest}) {
                                     tabs={[
                                         {
                                             tabName: "C Language",
-                                            display: cppLabDesc !== undefined,
+                                            display: c_langLabDesc !== undefined,
                                             tabIcon: BugReport,
                                             tabContent: (
                                                 <div>
                                                     <div
-                                                        style={{display: pendingExercise.c_lang.length === 0 && cppLabDesc !== undefined ? "block" : "none"}}>
+                                                        style={{display: pendingExercise.c_lang.length === 0 && c_langLabDesc !== undefined ? "block" : "none"}}>
                                                         <h4>No pending Exercise</h4></div>
                                                     <div
                                                         style={{display: pendingExercise.c_lang.length === 0 ? "none" : "block"}}>

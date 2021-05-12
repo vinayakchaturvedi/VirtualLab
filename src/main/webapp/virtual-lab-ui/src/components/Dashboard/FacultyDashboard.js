@@ -42,7 +42,7 @@ export default function FacultyDashboard({...rest}) {
     const [nonCreatedLabs, setNotCreatedLabs] = useState({});
     const [creationMessage, setCreationMessage] = useState("")
     const [executionSummary, setExecutionSummary] = useState({})
-    const [labels, setLabels] = useState(["Java", "Python"]);
+    const [labels, setLabels] = useState([]);
     const [exercises, setExercises] = useState({"java": undefined, "python": undefined, "c_lang": undefined});
     const [exerciseSummary, setExerciseSummary] = useState({"java": [], "python": [], "c_lang": []})
 
@@ -174,18 +174,28 @@ export default function FacultyDashboard({...rest}) {
             .then(res => res.json())
             .then(response => {
                 let javaSCount = 0, pythonSCount = 0, cLangSCount = 0;
-                let javaFCount = 0, pythonFCount = 0, cLangFCount = 0
+                let javaFCount = 0, pythonFCount = 0, cLangFCount = 0;
+                let labelTemp = [];
                 response.forEach(execution => {
                     if (execution.labName === "java") {
                         if (execution.successfulExecution) javaSCount++;
                         else javaFCount++;
+                        if(labelTemp.indexOf("Java") === -1){
+                            labelTemp.push("Java")
+                        }
                     } else if (execution.labName === "python") {
                         if (execution.successfulExecution) pythonSCount++;
                         else pythonFCount++;
+                        if(labelTemp.indexOf("Python") === -1){
+                            labelTemp.push("Python")
+                        }
                     }
                     if (execution.labName === "c_lang") {
                         if (execution.successfulExecution) cLangSCount++;
                         else cLangFCount++;
+                        if(labelTemp.indexOf("C Language") === -1){
+                            labelTemp.push("C Language")
+                        }
                     }
                 })
                 let executionSummaryTemp = {};
@@ -202,6 +212,7 @@ export default function FacultyDashboard({...rest}) {
                     FCount: cLangFCount
                 }
                 setExecutionSummary(executionSummaryTemp)
+                setLabels(labelTemp)
             })
             .catch(error => console.log(error));
 
