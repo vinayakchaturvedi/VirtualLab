@@ -1,0 +1,7 @@
+---
+- name: Make Service Down
+  hosts: localhost
+  tasks:
+    - name: Stop the Service
+      shell:
+        cmd: docker-compose down

@@ -1,0 +1,7 @@
+---
+- name: Make Service Up
+  hosts: localhost
+  tasks:
+    - name: Start the Service
+      shell:
+        cmd: docker-compose up
