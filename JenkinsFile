@@ -5,11 +5,8 @@ pipeline {
         backendImage='rushikesh0203/virtuallab_backend'
         dbImage='rushikesh0203/virtuallab_db'
         dockerfrontendImage = ''
-        dockerfrontendImageLatest = ''
         dockerbackendImage = ''
-        dockerbackendImageLatest = ''
         dockerdbImage = ''
-        dockerdbImageLatest = ''
    }
     stages {
         stage('Git Checkout') {
@@ -44,8 +41,7 @@ pipeline {
         stage('Building Backend Image') {
           steps{
             script {
-              dockerbackendImage = docker.build"$backendImage:${env.BUILD_NUMBER}"
-              dockerbackendImageLatest = dockerbackendImage.tag("latest")
+              dockerbackendImage = docker.build "$backendImage"
             }
           }
         }
@@ -53,8 +49,8 @@ pipeline {
         stage('Building Frontend Image') {
           steps{
             script {
-              dockerfrontendImage = docker.build ("$frontendImage:${env.BUILD_NUMBER}","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
-              dockerfrontendImageLatest = dockerfrontendImage.tag("latest")
+              dockerfrontendImage = docker.build ("$frontendImage","-f src/main/webapp/virtual-lab-ui/Dockerfile .")
+
             }
           }
         }
@@ -62,9 +58,33 @@ pipeline {
         stage('Building DB Image') {
           steps{
             script {
-              dockerdbImage = docker.build ("$dbImage:${env.BUILD_NUMBER}","-f dbDocker/Dockerfile .")
-              dockerdbImageLatest = dockerdbImage.tag("latest")
+              dockerdbImage = docker.build ("$dbImage","-f dbDocker/Dockerfile .")
             }
+          }
+        }
+
+        stage('Deploy Image') {
+          steps{
+            script {
+              docker.withRegistry( '', 'Docker' ) {
+                    dockerfrontendImage.push("${env.BUILD_NUMBER}")
+                    dockerfrontendImage.push("latest")
+                    dockerbackendImage.push("${env.BUILD_NUMBER}")
+                    dockerbackendImage.push("latest")
+                    dockerdbImage.push("${env.BUILD_NUMBER}")
+                    dockerdbImage.push("latest")
+              }
+            }
+          }
+        }
+
+        stage('Remove Unused docker image') {
+          steps{
+            script{
+            sh "docker rmi $frontendImage:latest;docker rmi $frontendImage:${env.BUILD_NUMBER}";
+            sh "docker rmi $backendImage:latest;docker rmi $backendImage:${env.BUILD_NUMBER}";
+            sh "docker rmi $dbImage:latest;docker rmi $dbImage:${env.BUILD_NUMBER}";
+          }
           }
         }
     }
