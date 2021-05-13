@@ -1,0 +1,7 @@
+---
+- name: Prune all the Mapped Volume
+  hosts: localhost
+  tasks:
+    - name: Prune all the data
+      shell:
+        cmd: docker volume prune -f
