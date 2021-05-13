@@ -9,6 +9,11 @@
     - name: Start Container
       shell:
         cmd: docker start {{labName}}
+    - name: Copy output file
+      fetch:
+        src: "{{ sourcePath }}"
+        dest: execise_file
+        flat: yes
     - name: Copy file
       shell:
-        cmd: docker cp {{sourcePath}} {{destPath}}
+        cmd: docker cp execise_file {{destPath}}

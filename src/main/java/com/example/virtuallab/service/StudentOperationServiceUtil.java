@@ -158,9 +158,11 @@ public class StudentOperationServiceUtil {
         String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String sourcePath = System.getProperty("user.dir") + "/" + fileName;
+        LOGGER.info("Source path: " + sourcePath);
+        LOGGER.info("File name: " + fileName);
         processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/Exercise", "-i", inventoryPath);
-        this.executeLinuxProcess.executeProcess(processBuilder);
-        new FileOperation().deleteFile(fileName);
+        LOGGER.info("executeLinuxProcess output: " + this.executeLinuxProcess.executeProcess(processBuilder));
+        //new FileOperation().deleteFile(fileName);
     }
 
     public Execution retrieveSubmission(JsonNode jsonNode) {
