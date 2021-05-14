@@ -2,13 +2,6 @@
 - name: Make Service Up
   hosts: localhost
   tasks:
-    - name: Remove old images
-      shell:
-        cmd: |
-          docker rmi rushikesh0203/virtuallab_frontend:latest
-          docker rmi rushikesh0203/virtuallab_backend:latest
-          docker rmi rushikesh0203/virtuallab_db:latest
-          docker rmi rushikesh0203/virtuallab_mongodb:latest
     - name: Stop Containers if any
       shell:
         cmd: |
