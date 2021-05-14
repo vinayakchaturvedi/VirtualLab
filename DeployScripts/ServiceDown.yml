@@ -4,7 +4,7 @@
   tasks:
     - name: Stop the Service
       shell:
-        cmd: docker-compose -f ./../docker-compose.yml down -d
+        cmd: docker-compose -f ./../docker-compose.yml down
     - name: Remove old images
       shell:
         cmd: |
