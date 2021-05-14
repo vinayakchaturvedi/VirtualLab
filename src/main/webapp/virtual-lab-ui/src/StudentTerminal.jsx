@@ -209,7 +209,7 @@ class StudentTerminal extends Component {
                         style={{fontWeight: "bold", fontSize: "1em"}}
 
                         commands={{
-                            execCommand: {
+                            ex: {
                                 method: (args, print, runCommand) => {
                                     //this.execCommandOnServer(${args._[0]})
                                     let cmd = '';
@@ -227,9 +227,9 @@ class StudentTerminal extends Component {
                             },
                         }}
                         descriptions={{
-                            execCommand: 'this will execute command run by student'
+                            ex: 'this will execute command run by student'
                         }}
-                        msg='Please specify you command like: "execCommand ls"'
+                        msg='Please specify you command like: "ex ls"'
                     />
                 </div>
             </div>

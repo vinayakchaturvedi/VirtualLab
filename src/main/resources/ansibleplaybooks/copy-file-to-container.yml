@@ -5,15 +5,15 @@
     labName: "{{ labName }}"
     sourcePath: "{{ sourcePath }}"
     destPath: "{{ destPath }}"
+    fileName: "{{ fileName }}"
   tasks:
     - name: Start Container
       shell:
         cmd: docker start {{labName}}
     - name: Copy output file
-      fetch:
+      copy:
         src: "{{ sourcePath }}"
-        dest: execise_file
-        flat: yes
+        dest: "{{ fileName }}"
     - name: Copy file
       shell:
-        cmd: docker cp execise_file {{destPath}}
+        cmd: docker cp {{fileName}} {{destPath}}

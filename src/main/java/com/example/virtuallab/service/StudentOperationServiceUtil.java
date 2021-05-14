@@ -141,7 +141,7 @@ public class StudentOperationServiceUtil {
         String ansibleFilePath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/copy-file-to-container.yml";
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String sourcePath = System.getProperty("user.dir") + "/" + fileName;
-        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/" + userName, "-i", inventoryPath);
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/" + userName + " fileName=" + fileName, "-i", inventoryPath);
         this.executeLinuxProcess.executeProcess(processBuilder);
         new FileOperation().deleteFile(fileName);
     }
@@ -159,8 +159,9 @@ public class StudentOperationServiceUtil {
         String inventoryPath = System.getProperty("user.dir") + "/src/main/resources/ansibleplaybooks/hosts";
         String sourcePath = System.getProperty("user.dir") + "/" + fileName;
         LOGGER.info("Source path: " + sourcePath);
+        LOGGER.info("Destination path: " + labName + ":/home/Exercise");
         LOGGER.info("File name: " + fileName);
-        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/Exercise", "-i", inventoryPath);
+        processBuilder.command("/usr/bin/ansible-playbook", "-v", ansibleFilePath, "-e", "labName=" + labName + " sourcePath=" + sourcePath + " destPath=" + labName + ":/home/Exercise" + " fileName=" + fileName, "-i", inventoryPath);
         LOGGER.info("executeLinuxProcess output: " + this.executeLinuxProcess.executeProcess(processBuilder));
         //new FileOperation().deleteFile(fileName);
     }
