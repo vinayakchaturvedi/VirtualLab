@@ -5,3 +5,4 @@
     - name: Stop the Service
       shell:
         cmd: docker-compose down
+      async: 15

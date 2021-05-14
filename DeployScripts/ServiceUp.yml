@@ -5,3 +5,4 @@
     - name: Start the Service
       shell:
         cmd: docker-compose up
+      async: 15
