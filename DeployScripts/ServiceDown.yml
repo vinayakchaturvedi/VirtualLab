@@ -5,7 +5,6 @@
     - name: Stop the Service
       shell:
         cmd: docker-compose -f ./../docker-compose.yml down -d
-      ignore_errors: yes
     - name: Remove old images
       shell:
         cmd: |
