@@ -4,9 +4,11 @@ pipeline {
         frontendImage='rushikesh0203/virtuallab_frontend'
         backendImage='rushikesh0203/virtuallab_backend'
         dbImage='rushikesh0203/virtuallab_db'
+        mongodbImage='rushikesh0203/virtuallab_mongodb'
         dockerfrontendImage = ''
         dockerbackendImage = ''
         dockerdbImage = ''
+        dockermongodbImage=''
    }
     stages {
         stage('Git Checkout') {
@@ -55,10 +57,11 @@ pipeline {
           }
         }
 
-        stage('Building DB Image') {
+        stage('Building DB Images') {
           steps{
             script {
-              dockerdbImage = docker.build ("$dbImage","-f dbDocker/Dockerfile .")
+              dockerdbImage = docker.build ("$dbImage","-f dbDocker/MySQL/Dockerfile .")
+              dockermongodbImage = docker.build ("$mongodbImage","-f dbDocker/MongoDb/Dockerfile .")
             }
           }
         }
@@ -73,6 +76,8 @@ pipeline {
                     dockerbackendImage.push("latest")
                     dockerdbImage.push("${env.BUILD_NUMBER}")
                     dockerdbImage.push("latest")
+                    dockermongodbImage.push("${env.BUILD_NUMBER}")
+                    dockermongodbImage.push("latest")
               }
             }
           }
@@ -81,11 +86,28 @@ pipeline {
         stage('Remove Unused docker image') {
           steps{
             script{
-            sh "docker rmi $frontendImage:latest;docker rmi $frontendImage:${env.BUILD_NUMBER}";
-            sh "docker rmi $backendImage:latest;docker rmi $backendImage:${env.BUILD_NUMBER}";
-            sh "docker rmi $dbImage:latest;docker rmi $dbImage:${env.BUILD_NUMBER}";
+                sh "docker rmi $frontendImage:latest;docker rmi $frontendImage:${env.BUILD_NUMBER}";
+                sh "docker rmi $backendImage:latest;docker rmi $backendImage:${env.BUILD_NUMBER}";
+                sh "docker rmi $dbImage:latest;docker rmi $dbImage:${env.BUILD_NUMBER}";
+                sh "docker rmi $mongodbImage:latest;docker rmi $mongodbImage:${env.BUILD_NUMBER}";
+
           }
           }
+        }
+
+        stage('Start the Deployment to Production Server'){
+            steps{
+                sh " ansible-playbook ./DeployScripts/ServiceUp.yml ";
+            }
+        }
+    }
+
+    post {
+        failure {
+            mail bcc: '', body: 'New Build failed', cc: 'vinayak.chaturvedi96@gmail.com swapnil.jain96@gmail.com', from: '', replyTo: '', subject: 'Deployment Status', to: 'rushikesh0203@gmail.com'
+        }
+        success {
+            mail bcc: '', body: 'New version is Up and Running', cc: 'vinayak.chaturvedi96@gmail.com swapnil.jain96@gmail.com', from: '', replyTo: '', subject: 'Deployment Status', to: 'rushikesh0203@gmail.com'
         }
     }
 }
