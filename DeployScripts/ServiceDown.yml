@@ -6,3 +6,5 @@
       shell:
         cmd: docker-compose -f ./../docker-compose.yml down
       async: 60
+      poll: 0
+      ignore_errors: yes

@@ -25,4 +25,5 @@
       shell:
         cmd: docker-compose -f ./../docker-compose.yml up
       async: 60
+      poll: 0
       ignore_errors: yes
