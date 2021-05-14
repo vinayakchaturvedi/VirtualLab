@@ -2,7 +2,27 @@
 - name: Make Service Up
   hosts: localhost
   tasks:
+    - name: Stop Containers if any
+      shell:
+        cmd: |
+          docker stop frontend
+          docker stop backend
+          docker stop db
+          docker stop mongodb
+          docker stop instituionserver
+      ignore_errors: yes
+    - name: Remove Containers if any
+      shell:
+        cmd: |
+          docker rm frontend
+          docker rm backend
+          docker rm db
+          docker rm mongodb
+          docker rm insitituionserver
+      ignore_errors: yes
+
     - name: Start the Service
       shell:
         cmd: docker-compose up
       async: 15
+      ignore_errors: yes
