@@ -23,6 +23,6 @@
 
     - name: Start the Service
       shell:
-        cmd: docker-compose up
+        cmd: docker-compose -f ./../docker-compose.yml up
       async: 60
       ignore_errors: yes
