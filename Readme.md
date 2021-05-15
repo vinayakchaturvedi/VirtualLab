@@ -1,4 +1,4 @@
-# **SPE Main Project - Virtual Lab**
+# **Virtual Lab**
 
 
 Virtual lab is a simulated learning environment that allows students to complete computer
@@ -37,3 +37,7 @@ achieve this we have used the container based approach for creating labs.
 6. Start using the application by going to http://localhost:4200/
 
 
+### **Developed and Maintained by**
+#### **Vinayak Chaturvedi: https://github.com/vinayakchaturvedi**
+#### **Rushikesh Jachak: https://github.com/Heisenberg0203**
+#### **Swapnil Jain: https://github.com/swapniljain96**
