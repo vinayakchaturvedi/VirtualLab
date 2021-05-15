@@ -16,4 +16,24 @@ achieve this we have used the container based approach for creating labs.
 
 
 ![DatabaseSchema](./ArchitectureDesign/DatabaseSchema.PNG)
-Database Design
+
+
+## **How to run**
+1. Stop following services (if installed and running)
+   
+    a. sudo systemctl stop mysql
+   
+    b. sudo systemctl stop mongod
+   
+2. git pull https://github.com/vinayakchaturvedi/VirtualLab.git
+3. Install docker and docker-compose
+   
+    a. sudo apt-get install docker
+
+    b. sudo apt-get install docker-compose
+
+4. sudo chmod 777 /var/run/docker.sock
+5. docker-compose up
+6. Start using the application by going to http://localhost:4200/
+
+
