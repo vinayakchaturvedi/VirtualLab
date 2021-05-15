@@ -58,6 +58,10 @@ public class StudentOperationServiceUtil {
 
         student.getLabs().add(lab);
         lab.setStudentsRegistered(lab.getStudentsRegistered() + 1);
+        for (Exercise exercise : lab.getExercises()) {
+            student.getExercisesPending().add(exercise);
+        }
+
         studentOperationDAO.save(student);
         labOperationDAO.save(lab);
         createUserInContainer(lab, student);
