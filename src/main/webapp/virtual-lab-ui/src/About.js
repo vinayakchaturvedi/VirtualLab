@@ -34,10 +34,17 @@ class About extends Component {
                         <div className="item">
                             <h1>Rushikesh Jachak</h1>
                             <br/>
+
                         </div>
                         <div className="item">
                             <h1>Swapnil Jain</h1>
                             <br/>
+                            <p>
+                                Swapnil is currently pursuing MTech in CSE at International Institute of Information
+                                Technology, Bangalore. He is a fresher in the industry and have hands on experience on
+                                various devops tools including Docker, Ansible,Jenkins, Maven, Version Control (Git, Subversion)
+                                and worked on various frameworks including React, Springboot and worked on MySQL,Oracle.
+                            </p>
                         </div>
                     </div>
                 </div>

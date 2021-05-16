@@ -25,7 +25,7 @@ class Contact extends Component {
                                 <img src={contact_us}/>
                             </div>
                             <div className="contact">
-                                <p>9406926901</p>
+                                <p>+91-9406926901</p>
                             </div>
                             <div className="contact">
                                 <img src={email}/>
@@ -41,13 +41,13 @@ class Contact extends Component {
                                 <img src={contact_us}/>
                             </div>
                             <div className="contact">
-                                <p>9424542771</p>
+                                <p>+91-8624982994</p>
                             </div>
                             <div className="contact">
                                 <img src={email}/>
                             </div>
                             <div className="contact">
-                                <p>rushikesh@gmail.com</p>
+                                <p>rushikesh0203@gmail.com</p>
                             </div>
                         </div>
                         <div className="item">
@@ -57,13 +57,13 @@ class Contact extends Component {
                                 <img src={contact_us}/>
                             </div>
                             <div className="contact">
-                                <p>8017961092</p>
+                                <p>+91-8871179151</p>
                             </div>
                             <div className="contact">
                                 <img src={email}/>
                             </div>
                             <div className="contact">
-                                <p>swapnil@gmail.com</p>
+                                <p>swapnil.jain96@gmail.com</p>
                             </div>
                         </div>
                     </div>
